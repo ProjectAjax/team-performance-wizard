@@ -1,63 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- ... (keep the existing head content) ... -->
-    <style>
-        /* ... (keep the existing styles) ... */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #4682b4;
-            color: white;
-        }
-    </style>
-</head>
-<body>
-    <!-- ... (keep the existing body content up to the dashboard div) ... -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let teamChart;
+    let teamMembers = [];
 
-    <div id="dashboard" class="container">
-        <h2>Team Dashboard</h2>
-        <div id="teamInfo"></div>
-        <div class="chart-container">
-            <canvas id="teamChart"></canvas>
-        </div>
-        
-        <h3>Add Team Member</h3>
-        <form id="memberForm">
-            <label for="memberName">Name:</label>
-            <input type="text" id="memberName" required>
-            
-            <label for="memberRole">Role:</label>
-            <input type="text" id="memberRole" required>
-            
-            <button type="submit">Add Member</button>
-        </form>
-        
-        <h3>Team Members</h3>
-        <table id="memberTable">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Role</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
+    const teamForm = document.getElementById('teamForm');
+    const memberForm = document.getElementById('memberForm');
+    const dashboard = document.getElementById('dashboard');
 
-    <script>
-        let teamChart;
-        let teamMembers = [];
-
-        document.getElementById('teamForm').addEventListener('submit', function(e) {
+    if (teamForm) {
+        teamForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
             var teamName = document.getElementById('teamName').value;
@@ -65,19 +16,28 @@
             var teamLead = document.getElementById('teamLead').value;
             
             // Update dashboard
-            document.getElementById('teamInfo').innerHTML = `
-                <p><strong>Team Name:</strong> ${teamName}</p>
-                <p><strong>Team Size:</strong> ${teamSize}</p>
-                <p><strong>Team Lead:</strong> ${teamLead}</p>
-            `;
+            const teamInfo = document.getElementById('teamInfo');
+            if (teamInfo) {
+                teamInfo.innerHTML = `
+                    <p><strong>Team Name:</strong> ${teamName}</p>
+                    <p><strong>Team Size:</strong> ${teamSize}</p>
+                    <p><strong>Team Lead:</strong> ${teamLead}</p>
+                `;
+            }
             
             // Show dashboard
-            document.getElementById('dashboard').style.display = 'block';
+            if (dashboard) {
+                dashboard.style.display = 'block';
+            }
             
             updateChart();
         });
+    } else {
+        console.error('Team form not found');
+    }
 
-        document.getElementById('memberForm').addEventListener('submit', function(e) {
+    if (memberForm) {
+        memberForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
             var name = document.getElementById('memberName').value;
@@ -92,9 +52,13 @@
             document.getElementById('memberName').value = '';
             document.getElementById('memberRole').value = '';
         });
+    } else {
+        console.error('Member form not found');
+    }
 
-        function updateMemberTable() {
-            var tbody = document.querySelector('#memberTable tbody');
+    function updateMemberTable() {
+        var tbody = document.querySelector('#memberTable tbody');
+        if (tbody) {
             tbody.innerHTML = '';
             
             teamMembers.forEach(function(member) {
@@ -105,15 +69,20 @@
                 nameCell.textContent = member.name;
                 roleCell.textContent = member.role;
             });
+        } else {
+            console.error('Member table not found');
         }
+    }
 
-        function updateChart() {
-            var roles = {};
-            teamMembers.forEach(function(member) {
-                roles[member.role] = (roles[member.role] || 0) + 1;
-            });
-            
-            var ctx = document.getElementById('teamChart').getContext('2d');
+    function updateChart() {
+        var roles = {};
+        teamMembers.forEach(function(member) {
+            roles[member.role] = (roles[member.role] || 0) + 1;
+        });
+        
+        var ctx = document.getElementById('teamChart');
+        if (ctx) {
+            ctx = ctx.getContext('2d');
             
             if (teamChart) {
                 teamChart.destroy();
@@ -139,7 +108,9 @@
                     }
                 }
             });
+        } else {
+            console.error('Chart canvas not found');
         }
-    </script>
-</body>
-</html>
+    }
+});
+</script>
