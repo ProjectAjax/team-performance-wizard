@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Training Culture Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -19,8 +20,9 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
-        h1 {
+        h1, h2 {
             color: #4682b4;
         }
         form {
@@ -50,6 +52,14 @@
         button:hover {
             background-color: #36648b;
         }
+        #dashboard {
+            display: none;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -71,7 +81,17 @@
         </form>
     </div>
 
+    <div id="dashboard" class="container">
+        <h2>Team Dashboard</h2>
+        <div id="teamInfo"></div>
+        <div class="chart-container">
+            <canvas id="teamChart"></canvas>
+        </div>
+    </div>
+
     <script>
+        let teamChart;
+
         document.getElementById('teamForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -79,11 +99,40 @@
             var teamSize = document.getElementById('teamSize').value;
             var teamLead = document.getElementById('teamLead').value;
             
-            alert('Team info submitted!\n\nTeam Name: ' + teamName + '\nTeam Size: ' + teamSize + '\nTeam Lead: ' + teamLead);
+            // Update dashboard
+            document.getElementById('teamInfo').innerHTML = `
+                <p><strong>Team Name:</strong> ${teamName}</p>
+                <p><strong>Team Size:</strong> ${teamSize}</p>
+                <p><strong>Team Lead:</strong> ${teamLead}</p>
+            `;
             
-            // Here's where we'd typically send this data to a server or store it
-            // For now, we'll just log it to the console
-            console.log('Team Info:', { teamName, teamSize, teamLead });
+            // Show dashboard
+            document.getElementById('dashboard').style.display = 'block';
+            
+            // Create or update chart
+            if (teamChart) {
+                teamChart.destroy();
+            }
+            
+            var ctx = document.getElementById('teamChart').getContext('2d');
+            teamChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Team Lead', 'Team Members'],
+                    datasets: [{
+                        data: [1, teamSize - 1],
+                        backgroundColor: ['#4682b4', '#87CEEB']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    title: {
+                        display: true,
+                        text: 'Team Composition'
+                    }
+                }
+            });
         });
     </script>
 </body>
