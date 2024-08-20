@@ -7,22 +7,48 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f8ff; /* Light blue background */
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f8ff;
         }
         .container {
-            text-align: center;
-            padding: 20px;
             background-color: white;
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         h1 {
-            color: #4682b4; /* Steel blue color */
+            color: #4682b4;
+        }
+        form {
+            margin-top: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4682b4;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #36648b;
         }
     </style>
 </head>
@@ -30,6 +56,35 @@
     <div class="container">
         <h1>Welcome to Training Culture</h1>
         <p>Your journey to optimal team performance starts here!</p>
+        
+        <form id="teamForm">
+            <label for="teamName">Team Name:</label>
+            <input type="text" id="teamName" name="teamName" required>
+            
+            <label for="teamSize">Team Size:</label>
+            <input type="number" id="teamSize" name="teamSize" required>
+            
+            <label for="teamLead">Team Lead:</label>
+            <input type="text" id="teamLead" name="teamLead" required>
+            
+            <button type="submit">Submit Team Info</button>
+        </form>
     </div>
+
+    <script>
+        document.getElementById('teamForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            var teamName = document.getElementById('teamName').value;
+            var teamSize = document.getElementById('teamSize').value;
+            var teamLead = document.getElementById('teamLead').value;
+            
+            alert('Team info submitted!\n\nTeam Name: ' + teamName + '\nTeam Size: ' + teamSize + '\nTeam Lead: ' + teamLead);
+            
+            // Here's where we'd typically send this data to a server or store it
+            // For now, we'll just log it to the console
+            console.log('Team Info:', { teamName, teamSize, teamLead });
+        });
+    </script>
 </body>
 </html>
