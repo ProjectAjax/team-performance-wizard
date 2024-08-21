@@ -51,10 +51,7 @@
         button:hover {
             background-color: #36648b;
         }
-        #dashboard {
-            display: none;
-        }
-        #taskForm, #memberTasks {
+        #dashboard, #taskForm, #memberTasks {
             display: none;
         }
         .chart-container {
@@ -81,6 +78,30 @@
         }
         .highlight {
             background-color: #ffdddd;
+        }
+        .delete-button {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 5px 10px;
+            margin-left: 10px;
+        }
+        .delete-button:hover {
+            background-color: #ff3b3b;
+        }
+        .back-button {
+            background-color: #4682b4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 5px 10px;
+            margin-top: 10px;
+        }
+        .back-button:hover {
+            background-color: #36648b;
         }
     </style>
 </head>
@@ -136,6 +157,7 @@
                     <th>Name</th>
                     <th>Role</th>
                     <th>Talent Rating</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -168,6 +190,7 @@
                 
                 <button type="submit">Add Task</button>
             </form>
+            <button class="back-button" onclick="goBackToMemberList()">Go Back to Member List</button>
         </div>
 
         <!-- Tasks for the Selected Team Member -->
@@ -184,6 +207,7 @@
                 </thead>
                 <tbody></tbody>
             </table>
+            <button class="back-button" onclick="goBackToMemberList()">Go Back to Member List</button>
         </div>
 
         <!-- Chart Container -->
@@ -237,32 +261,41 @@
                 const role = document.getElementById('memberRole').value;
                 const talentRating = document.getElementById('talentRating').value;
 
-                teamMembers.push({ name: name, role: role, talentRating: talentRating });
+                teamMembers.push({name, role, talentRating});
                 memberTasks[name] = [];
 
                 updateMemberTable();
                 updateCharts();
 
-                document.getElementById('memberName').value = '';
-                document.getElementById('memberRole').value = '';
-                document.getElementById('talentRating').value = 'Medium';
+                // Clear the form
+                memberForm.reset();
             });
 
-            // Update the team members table
+            // Update the member table
             function updateMemberTable() {
                 const tbody = document.querySelector('#memberTable tbody');
                 tbody.innerHTML = '';
 
-                teamMembers.forEach(function(member) {
+                teamMembers.forEach(function(member, index) {
                     const row = tbody.insertRow();
                     row.classList.add('member-row');
                     const nameCell = row.insertCell(0);
                     const roleCell = row.insertCell(1);
                     const talentCell = row.insertCell(2);
+                    const actionCell = row.insertCell(3);
 
                     nameCell.textContent = member.name;
                     roleCell.textContent = member.role;
                     talentCell.textContent = member.talentRating;
+
+                    // Delete button
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.classList.add('delete-button');
+                    deleteButton.addEventListener('click', function() {
+                        deleteMember(index);
+                    });
+                    actionCell.appendChild(deleteButton);
 
                     // Event listener for clicking a row to manage tasks
                     row.addEventListener('click', function() {
@@ -275,6 +308,19 @@
                         updateSpiderChart(selectedMember);
                     });
                 });
+            }
+
+            // Delete a team member
+            function deleteMember(index) {
+                const memberName = teamMembers[index].name;
+                teamMembers.splice(index, 1);
+                delete memberTasks[memberName];
+
+                updateMemberTable();
+                updateCharts();
+
+                taskForm.style.display = 'none';
+                memberTasksDiv.style.display = 'none';
             }
 
             // Update the tasks table for a selected member
@@ -443,6 +489,12 @@
                         }
                     });
                 }
+            }
+
+            // Go back to the member list
+            function goBackToMemberList() {
+                taskForm.style.display = 'none';
+                memberTasksDiv.style.display = 'none';
             }
         });
     </script>
