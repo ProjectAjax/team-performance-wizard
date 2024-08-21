@@ -7,240 +7,250 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            padding-top: 20px;
-            padding-bottom: 20px;
-            background-color: #f5f5f5;
+            background-color: #f8f9fa;
         }
         .container {
+            margin-top: 30px;
             max-width: 800px;
-        }
-        .logo {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .logo img {
-            max-width: 150px;
         }
         h1, h2, h3 {
             text-align: center;
+            margin-bottom: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .btn-primary {
+            width: 100%;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        table {
+            margin-top: 20px;
+        }
+        #teamMembersTable, #tasksTable {
+            background-color: white;
+        }
+        #generateReport {
+            margin-top: 20px;
+            background-color: #007bff;
+            color: white;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        #generateReport:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">
-            <img src="tc%20LOGO%20UPDATE%20.png" alt="SkillsSync360 Logo">
-        </div>
-        <h1>Welcome to SkillsSync360</h1>
-        <p class="text-center">Your journey to optimal team performance starts here!</p>
 
-        <!-- Team Info Form -->
-        <form id="teamForm">
+<div class="container">
+    <h1>SkillsSync360</h1>
+    <h2>Training People to Shape Culture</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <h3>Team Information</h3>
             <div class="form-group">
                 <label for="teamName">Team Name:</label>
-                <input type="text" class="form-control" id="teamName" required>
+                <input type="text" class="form-control" id="teamName">
             </div>
             <div class="form-group">
                 <label for="teamSize">Team Size:</label>
-                <input type="number" class="form-control" id="teamSize" required>
+                <input type="number" class="form-control" id="teamSize">
             </div>
             <div class="form-group">
                 <label for="teamLead">Team Lead:</label>
-                <input type="text" class="form-control" id="teamLead" required>
+                <input type="text" class="form-control" id="teamLead">
             </div>
-            <button type="submit" class="btn btn-primary">Submit Team Info</button>
-        </form>
+            <button id="submitTeamInfo" class="btn btn-primary">Submit Team Info</button>
+        </div>
+    </div>
 
-        <!-- Team Dashboard -->
-        <div id="teamDashboard" style="display:none;">
-            <h2>Team Dashboard</h2>
-            <p><strong>Team Name:</strong> <span id="dashboardTeamName"></span></p>
-            <p><strong>Team Size:</strong> <span id="dashboardTeamSize"></span></p>
-            <p><strong>Team Lead:</strong> <span id="dashboardTeamLead"></span></p>
-
-            <!-- Add Team Member Form -->
+    <div class="card">
+        <div class="card-body">
             <h3>Add Team Member</h3>
-            <form id="memberForm">
-                <div class="form-group">
-                    <label for="memberName">Name:</label>
-                    <input type="text" class="form-control" id="memberName" required>
-                </div>
-                <div class="form-group">
-                    <label for="memberRole">Role:</label>
-                    <input type="text" class="form-control" id="memberRole" required>
-                </div>
-                <div class="form-group">
-                    <label for="memberTalent">Talent Rating:</label>
-                    <select class="form-control" id="memberTalent" required>
-                        <option value="Critical">Critical</option>
-                        <option value="High">High</option>
-                        <option value="Moderate">Moderate</option>
-                        <option value="Low">Low</option>
-                        <option value="Emerging">Emerging</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Add Member</button>
-            </form>
+            <div class="form-group">
+                <label for="memberName">Name:</label>
+                <input type="text" class="form-control" id="memberName">
+            </div>
+            <div class="form-group">
+                <label for="memberRole">Role:</label>
+                <input type="text" class="form-control" id="memberRole">
+            </div>
+            <div class="form-group">
+                <label for="talentRating">Talent Rating:</label>
+                <select class="form-control" id="talentRating">
+                    <option value="Critical">Critical</option>
+                    <option value="High">High</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="Low">Low</option>
+                    <option value="Emerging">Emerging</option>
+                </select>
+            </div>
+            <button id="addMember" class="btn btn-primary">Add Member</button>
+        </div>
+    </div>
 
-            <!-- Team Members Table -->
-            <h3>Team Members</h3>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Role</th>
-                        <th>Talent</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="membersTableBody"></tbody>
-            </table>
+    <h3>Team Members</h3>
+    <table class="table table-bordered" id="teamMembersTable">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Talent</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
-            <!-- Task Analysis Form -->
-            <h3 id="taskAnalysisTitle">Task Analysis</h3>
-            <form id="taskForm" style="display:none;">
+    <div class="card">
+        <div class="card-body">
+            <h3>Task Analysis</h3>
+            <div id="taskAnalysisSection" style="display: none;">
+                <h4>Tasks for <span id="currentMemberName"></span></h4>
                 <div class="form-group">
                     <label for="taskName">Task Name:</label>
-                    <input type="text" class="form-control" id="taskName" required>
+                    <input type="text" class="form-control" id="taskName">
                 </div>
                 <div class="form-group">
                     <label for="taskImportance">Task Importance:</label>
-                    <select class="form-control" id="taskImportance" required>
+                    <select class="form-control" id="taskImportance">
                         <option value="High">High</option>
                         <option value="Medium">Medium</option>
                         <option value="Low">Low</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="taskTimeQuality">Quality of Time Spent on Task:</label>
-                    <select class="form-control" id="taskTimeQuality" required>
+                    <label for="timeQuality">Quality of Time Spent on Task:</label>
+                    <select class="form-control" id="timeQuality">
                         <option value="Excellent">Excellent</option>
                         <option value="Good">Good</option>
-                        <option value="Fair">Fair</option>
                         <option value="Poor">Poor</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="taskSkills">Skills Required:</label>
-                    <input type="text" class="form-control" id="taskSkills" required>
+                    <input type="text" class="form-control" id="taskSkills" placeholder="List required skills, separated by commas">
                 </div>
-                <button type="submit" class="btn btn-primary">Add Task</button>
-            </form>
+                <button id="addTask" class="btn btn-primary">Add Task</button>
+            </div>
 
-            <!-- Tasks Table -->
-            <h3>Tasks for <span id="taskMemberName"></span></h3>
-            <table class="table table-bordered">
+            <h4>Tasks for <span id="currentMemberNameList"></span></h4>
+            <table class="table table-bordered" id="tasksTable">
                 <thead>
-                    <tr>
-                        <th>Task Name</th>
-                        <th>Importance</th>
-                        <th>Quality of Time</th>
-                        <th>Skills Required</th>
-                    </tr>
+                <tr>
+                    <th>Task Name</th>
+                    <th>Importance</th>
+                    <th>Quality of Time</th>
+                    <th>Skills Required</th>
+                </tr>
                 </thead>
-                <tbody id="tasksTable"></tbody>
+                <tbody></tbody>
             </table>
-
-            <!-- Generate Report Button -->
-            <button id="generateReport" class="btn btn-success" style="display:none;">Generate Report</button>
         </div>
     </div>
 
-    <script>
-        const teamInfo = {};
-        const members = [];
-        const memberTasks = {};
+    <button id="generateReport">Generate Report</button>
+</div>
 
-        document.getElementById('teamForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            teamInfo.name = document.getElementById('teamName').value;
-            teamInfo.size = document.getElementById('teamSize').value;
-            teamInfo.lead = document.getElementById('teamLead').value;
+<script>
+    const teamMembers = [];
+    const memberTasks = {};
 
-            document.getElementById('dashboardTeamName').textContent = teamInfo.name;
-            document.getElementById('dashboardTeamSize').textContent = teamInfo.size;
-            document.getElementById('dashboardTeamLead').textContent = teamInfo.lead;
+    document.getElementById('submitTeamInfo').addEventListener('click', function () {
+        document.querySelector('.container').scrollIntoView({behavior: 'smooth'});
+    });
 
-            document.getElementById('teamDashboard').style.display = 'block';
-        });
+    document.getElementById('addMember').addEventListener('click', function () {
+        const name = document.getElementById('memberName').value;
+        const role = document.getElementById('memberRole').value;
+        const talent = document.getElementById('talentRating').value;
 
-        document.getElementById('memberForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const name = document.getElementById('memberName').value;
-            const role = document.getElementById('memberRole').value;
-            const talent = document.getElementById('memberTalent').value;
-
-            members.push({ name, role, talent });
+        if (name && role && talent) {
+            teamMembers.push({name, role, talent});
             memberTasks[name] = [];
+            updateTeamMembersTable();
+            document.getElementById('memberName').value = '';
+            document.getElementById('memberRole').value = '';
+            document.getElementById('talentRating').value = 'Critical';
+            showTaskAnalysisSection(name);
+        }
+    });
 
-            updateMembersTable();
-            document.getElementById('memberForm').reset();
+    function updateTeamMembersTable() {
+        const tableBody = document.querySelector('#teamMembersTable tbody');
+        tableBody.innerHTML = '';
+        teamMembers.forEach((member, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${member.name}</td>
+                <td>${member.role}</td>
+                <td>${member.talent}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="deleteMember(${index})">Delete</button></td>
+            `;
+            tableBody.appendChild(row);
         });
+    }
 
-        function updateMembersTable() {
-            const tableBody = document.getElementById('membersTableBody');
-            tableBody.innerHTML = '';
-            members.forEach((member, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><a href="#" onclick="selectMember('${member.name}')">${member.name}</a></td>
-                    <td>${member.role}</td>
-                    <td>${member.talent}</td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteMember(${index})">Delete</button></td>
-                `;
-                tableBody.appendChild(row);
-            });
-            document.getElementById('generateReport').style.display = members.length > 0 ? 'block' : 'none';
-        }
+    function deleteMember(index) {
+        const memberName = teamMembers[index].name;
+        teamMembers.splice(index, 1);
+        delete memberTasks[memberName];
+        updateTeamMembersTable();
+    }
 
-        function deleteMember(index) {
-            const memberName = members[index].name;
-            members.splice(index, 1);
-            delete memberTasks[memberName];
-            updateMembersTable();
-        }
+    function showTaskAnalysisSection(name) {
+        document.getElementById('currentMemberName').textContent = name;
+        document.getElementById('currentMemberNameList').textContent = name;
+        document.getElementById('taskAnalysisSection').style.display = 'block';
+        updateTasksTable(name);
+    }
 
-        function selectMember(name) {
-            document.getElementById('taskForm').style.display = 'block';
-            document.getElementById('taskMemberName').textContent = name;
-            updateTasksTable(name);
-        }
+    document.getElementById('addTask').addEventListener('click', function () {
+        const memberName = document.getElementById('currentMemberName').textContent;
+        const taskName = document.getElementById('taskName').value;
+        const importance = document.getElementById('taskImportance').value;
+        const timeQuality = document.getElementById('timeQuality').value;
+        const skills = document.getElementById('taskSkills').value;
 
-        document.getElementById('taskForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const memberName = document.getElementById('taskMemberName').textContent;
-            const task = {
-                name: document.getElementById('taskName').value,
-                importance: document.getElementById('taskImportance').value,
-                timeQuality: document.getElementById('taskTimeQuality').value,
-                skills: document.getElementById('taskSkills').value,
-            };
-
-            memberTasks[memberName].push(task);
+        if (taskName && importance && timeQuality && skills) {
+            memberTasks[memberName].push({name: taskName, importance, timeQuality, skills});
             updateTasksTable(memberName);
-            document.getElementById('taskForm').reset();
-        });
-
-        function updateTasksTable(memberName) {
-            const tasks = memberTasks[memberName];
-            const tableBody = document.getElementById('tasksTable');
-            tableBody.innerHTML = '';
-            tasks.forEach(task => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${task.name}</td>
-                    <td>${task.importance}</td>
-                    <td>${task.timeQuality}</td>
-                    <td>${task.skills}</td>
-                `;
-                tableBody.appendChild(row);
-            });
+            document.getElementById('taskName').value = '';
+            document.getElementById('taskImportance').value = 'High';
+            document.getElementById('timeQuality').value = 'Excellent';
+            document.getElementById('taskSkills').value = '';
         }
+    });
 
-        document.getElementById('generateReport').addEventListener('click', function () {
-            // Logic to generate the report based on collected data
-            alert('Report generation is not implemented yet. This will summarize and visualize the team data.');
+    function updateTasksTable(memberName) {
+        const tasks = memberTasks[memberName];
+        const tableBody = document.querySelector('#tasksTable tbody');
+        tableBody.innerHTML = '';
+        tasks.forEach(task => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${task.name}</td>
+                <td>${task.importance}</td>
+                <td>${task.timeQuality}</td>
+                <td>${task.skills}</td>
+            `;
+            tableBody.appendChild(row);
         });
-    </script>
+    }
+
+    document.getElementById('generateReport').addEventListener('click', function () {
+        alert('Report generation functionality will be implemented here.');
+        // Here you would implement the report generation functionality.
+    });
+</script>
+
 </body>
 </html>
+
