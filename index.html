@@ -3,254 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillsSync360</title>
+    <title>Team Performance Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #f0f8ff;
+            color: #333;
         }
         .container {
-            margin-top: 30px;
-            max-width: 800px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
         }
         h1, h2, h3 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .card {
-            margin-bottom: 20px;
+            color: #4682b4;
         }
         .btn-primary {
+            background-color: #4682b4;
+            border-color: #4682b4;
+        }
+        .btn-primary:hover {
+            background-color: #36648b;
+            border-color: #36648b;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 300px;
             width: 100%;
-        }
-        .form-group label {
-            font-weight: bold;
-        }
-        table {
-            margin-top: 20px;
-        }
-        #teamMembersTable, #tasksTable {
-            background-color: white;
-        }
-        #generateReport {
-            margin-top: 20px;
-            background-color: #007bff;
-            color: white;
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-        }
-        #generateReport:hover {
-            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-
 <div class="container">
-    <h1>SkillsSync360</h1>
-    <h2>Training People to Shape Culture</h2>
+    <h1 class="text-center mb-4">Team Performance Dashboard</h1>
 
-    <div class="card">
-        <div class="card-body">
-            <h3>Team Information</h3>
-            <div class="form-group">
-                <label for="teamName">Team Name:</label>
-                <input type="text" class="form-control" id="teamName">
-            </div>
-            <div class="form-group">
-                <label for="teamSize">Team Size:</label>
-                <input type="number" class="form-control" id="teamSize">
-            </div>
-            <div class="form-group">
-                <label for="teamLead">Team Lead:</label>
-                <input type="text" class="form-control" id="teamLead">
-            </div>
-            <button id="submitTeamInfo" class="btn btn-primary">Submit Team Info</button>
-        </div>
+    <div id="teamInfo">
+        <h2>Team Dashboard</h2>
+        <p><strong>Team Name:</strong> <span id="displayTeamName"></span></p>
+        <p><strong>Team Size:</strong> <span id="displayTeamSize"></span></p>
+        <p><strong>Team Lead:</strong> <span id="displayTeamLead"></span></p>
     </div>
 
-    <div class="card">
-        <div class="card-body">
-            <h3>Add Team Member</h3>
-            <div class="form-group">
-                <label for="memberName">Name:</label>
-                <input type="text" class="form-control" id="memberName">
-            </div>
-            <div class="form-group">
-                <label for="memberRole">Role:</label>
-                <input type="text" class="form-control" id="memberRole">
-            </div>
-            <div class="form-group">
-                <label for="talentRating">Talent Rating:</label>
-                <select class="form-control" id="talentRating">
-                    <option value="Critical">Critical</option>
-                    <option value="High">High</option>
-                    <option value="Moderate">Moderate</option>
-                    <option value="Low">Low</option>
-                    <option value="Emerging">Emerging</option>
-                </select>
-            </div>
-            <button id="addMember" class="btn btn-primary">Add Member</button>
-        </div>
+    <div class="chart-container mb-4">
+        <canvas id="roleChart"></canvas>
     </div>
 
-    <h3>Team Members</h3>
-    <table class="table table-bordered" id="teamMembersTable">
+    <h3>Add Team Member</h3>
+    <form id="memberForm">
+        <div class="form-group">
+            <label for="memberName">Name:</label>
+            <input type="text" id="memberName" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="memberRole">Role:</label>
+            <input type="text" id="memberRole" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="memberPerformance">Performance Rating (1-10):</label>
+            <input type="number" id="memberPerformance" class="form-control" min="1" max="10" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Member</button>
+    </form>
+
+    <h3 class="mt-4">Team Members</h3>
+    <table class="table table-bordered">
         <thead>
-        <tr>
-            <th>Name</th>
-            <th>Role</th>
-            <th>Talent</th>
-            <th>Action</th>
-        </tr>
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Performance</th>
+                <th>Action</th>
+            </tr>
         </thead>
-        <tbody></tbody>
+        <tbody id="membersTable"></tbody>
     </table>
-
-    <div class="card">
-        <div class="card-body">
-            <h3>Task Analysis</h3>
-            <div id="taskAnalysisSection" style="display: none;">
-                <h4>Tasks for <span id="currentMemberName"></span></h4>
-                <div class="form-group">
-                    <label for="taskName">Task Name:</label>
-                    <input type="text" class="form-control" id="taskName">
-                </div>
-                <div class="form-group">
-                    <label for="taskImportance">Task Importance:</label>
-                    <select class="form-control" id="taskImportance">
-                        <option value="High">High</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Low">Low</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="timeQuality">Quality of Time Spent on Task:</label>
-                    <select class="form-control" id="timeQuality">
-                        <option value="Excellent">Excellent</option>
-                        <option value="Good">Good</option>
-                        <option value="Poor">Poor</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="taskSkills">Skills Required:</label>
-                    <input type="text" class="form-control" id="taskSkills" placeholder="List required skills, separated by commas">
-                </div>
-                <button id="addTask" class="btn btn-primary">Add Task</button>
-            </div>
-
-            <h4>Tasks for <span id="currentMemberNameList"></span></h4>
-            <table class="table table-bordered" id="tasksTable">
-                <thead>
-                <tr>
-                    <th>Task Name</th>
-                    <th>Importance</th>
-                    <th>Quality of Time</th>
-                    <th>Skills Required</th>
-                </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </div>
-
-    <button id="generateReport">Generate Report</button>
 </div>
 
 <script>
-    const teamMembers = [];
-    const memberTasks = {};
+let team = {};
+let members = [];
 
-    document.getElementById('submitTeamInfo').addEventListener('click', function () {
-        document.querySelector('.container').scrollIntoView({behavior: 'smooth'});
+document.getElementById('memberForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('memberName').value;
+    const role = document.getElementById('memberRole').value;
+    const performance = document.getElementById('memberPerformance').value;
+    
+    members.push({name, role, performance});
+    updateMembersTable();
+    updateRoleChart();
+    
+    this.reset();
+});
+
+function updateMembersTable() {
+    const table = document.getElementById('membersTable');
+    table.innerHTML = '';
+    members.forEach((member, index) => {
+        const row = table.insertRow();
+        row.innerHTML = `
+            <td>${member.name}</td>
+            <td>${member.role}</td>
+            <td>${member.performance}</td>
+            <td><button class="btn btn-danger btn-sm" onclick="deleteMember(${index})">Delete</button></td>
+        `;
     });
+}
 
-    document.getElementById('addMember').addEventListener('click', function () {
-        const name = document.getElementById('memberName').value;
-        const role = document.getElementById('memberRole').value;
-        const talent = document.getElementById('talentRating').value;
+function deleteMember(index) {
+    members.splice(index, 1);
+    updateMembersTable();
+    updateRoleChart();
+}
 
-        if (name && role && talent) {
-            teamMembers.push({name, role, talent});
-            memberTasks[name] = [];
-            updateTeamMembersTable();
-            document.getElementById('memberName').value = '';
-            document.getElementById('memberRole').value = '';
-            document.getElementById('talentRating').value = 'Critical';
-            showTaskAnalysisSection(name);
+function updateRoleChart() {
+    const ctx = document.getElementById('roleChart').getContext('2d');
+    const roleCounts = members.reduce((counts, member) => {
+        counts[member.role] = (counts[member.role] || 0) + 1;
+        return counts;
+    }, {});
+
+    const data = {
+        labels: Object.keys(roleCounts),
+        datasets: [{
+            data: Object.values(roleCounts),
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.8)',
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(255, 206, 86, 0.8)',
+                'rgba(75, 192, 192, 0.8)',
+                'rgba(153, 102, 255, 0.8)',
+            ]
+        }]
+    };
+
+    if (window.roleChart) {
+        window.roleChart.destroy();
+    }
+
+    window.roleChart = new Chart(ctx, {
+        type: 'pie',
+        data: data,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Team Composition by Role'
+                }
+            }
         }
     });
+}
 
-    function updateTeamMembersTable() {
-        const tableBody = document.querySelector('#teamMembersTable tbody');
-        tableBody.innerHTML = '';
-        teamMembers.forEach((member, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${member.name}</td>
-                <td>${member.role}</td>
-                <td>${member.talent}</td>
-                <td><button class="btn btn-danger btn-sm" onclick="deleteMember(${index})">Delete</button></td>
-            `;
-            tableBody.appendChild(row);
-        });
-    }
+// Initialize team info
+team.name = "Suse";
+team.size = 10;
+team.lead = "Me";
+document.getElementById('displayTeamName').textContent = team.name;
+document.getElementById('displayTeamSize').textContent = team.size;
+document.getElementById('displayTeamLead').textContent = team.lead;
 
-    function deleteMember(index) {
-        const memberName = teamMembers[index].name;
-        teamMembers.splice(index, 1);
-        delete memberTasks[memberName];
-        updateTeamMembersTable();
-    }
-
-    function showTaskAnalysisSection(name) {
-        document.getElementById('currentMemberName').textContent = name;
-        document.getElementById('currentMemberNameList').textContent = name;
-        document.getElementById('taskAnalysisSection').style.display = 'block';
-        updateTasksTable(name);
-    }
-
-    document.getElementById('addTask').addEventListener('click', function () {
-        const memberName = document.getElementById('currentMemberName').textContent;
-        const taskName = document.getElementById('taskName').value;
-        const importance = document.getElementById('taskImportance').value;
-        const timeQuality = document.getElementById('timeQuality').value;
-        const skills = document.getElementById('taskSkills').value;
-
-        if (taskName && importance && timeQuality && skills) {
-            memberTasks[memberName].push({name: taskName, importance, timeQuality, skills});
-            updateTasksTable(memberName);
-            document.getElementById('taskName').value = '';
-            document.getElementById('taskImportance').value = 'High';
-            document.getElementById('timeQuality').value = 'Excellent';
-            document.getElementById('taskSkills').value = '';
-        }
-    });
-
-    function updateTasksTable(memberName) {
-        const tasks = memberTasks[memberName];
-        const tableBody = document.querySelector('#tasksTable tbody');
-        tableBody.innerHTML = '';
-        tasks.forEach(task => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${task.name}</td>
-                <td>${task.importance}</td>
-                <td>${task.timeQuality}</td>
-                <td>${task.skills}</td>
-            `;
-            tableBody.appendChild(row);
-        });
-    }
-
-    document.getElementById('generateReport').addEventListener('click', function () {
-        alert('Report generation functionality will be implemented here.');
-        // Here you would implement the report generation functionality.
-    });
+// Initial chart update
+updateRoleChart();
 </script>
-
 </body>
 </html>
-
