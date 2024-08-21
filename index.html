@@ -3,74 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Performance Dashboard</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Training Culture</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .container {
-            margin-top: 50px;
-        }
-        h1 {
-            margin-bottom: 20px;
-        }
-        .card {
-            margin-bottom: 20px;
-        }
-        .btn-danger {
-            color: white;
-        }
-        .chart-container {
-            width: 100%;
-            height: 400px;
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container mt-5">
         <h1 class="text-center">Welcome to Training Culture</h1>
         <p class="text-center">Your journey to optimal team performance starts here!</p>
 
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Team Info</h5>
-                <div class="form-group">
-                    <label for="teamName">Team Name:</label>
-                    <input type="text" class="form-control" id="teamName">
+        <div class="card p-3 mb-4">
+            <h4>Team Info</h4>
+            <form id="teamForm">
+                <div class="mb-3">
+                    <label for="teamName" class="form-label">Team Name:</label>
+                    <input type="text" class="form-control" id="teamName" required>
                 </div>
-                <div class="form-group">
-                    <label for="teamSize">Team Size:</label>
-                    <input type="number" class="form-control" id="teamSize">
+                <div class="mb-3">
+                    <label for="teamSize" class="form-label">Team Size:</label>
+                    <input type="number" class="form-control" id="teamSize" required>
                 </div>
-                <div class="form-group">
-                    <label for="teamLead">Team Lead:</label>
-                    <input type="text" class="form-control" id="teamLead">
+                <div class="mb-3">
+                    <label for="teamLead" class="form-label">Team Lead:</label>
+                    <input type="text" class="form-control" id="teamLead" required>
                 </div>
-                <button id="submitTeamInfo" class="btn btn-primary">Submit Team Info</button>
-            </div>
+                <button type="submit" class="btn btn-primary">Submit Team Info</button>
+            </form>
         </div>
 
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Team Dashboard</h5>
-                <p><strong>Team Name:</strong> <span id="displayTeamName"></span></p>
-                <p><strong>Team Size:</strong> <span id="displayTeamSize"></span></p>
-                <p><strong>Team Lead:</strong> <span id="displayTeamLead"></span></p>
+        <div id="teamDashboard" class="card p-3 mb-4 d-none">
+            <h4>Team Dashboard</h4>
+            <p><strong>Team Name:</strong> <span id="displayTeamName"></span></p>
+            <p><strong>Team Size:</strong> <span id="displayTeamSize"></span></p>
+            <p><strong>Team Lead:</strong> <span id="displayTeamLead"></span></p>
 
-                <h6>Add Team Member</h6>
-                <div class="form-group">
-                    <label for="memberName">Name:</label>
-                    <input type="text" class="form-control" id="memberName">
+            <h5>Add Team Member</h5>
+            <form id="memberForm">
+                <div class="mb-3">
+                    <label for="memberName" class="form-label">Name:</label>
+                    <input type="text" class="form-control" id="memberName" required>
                 </div>
-                <div class="form-group">
-                    <label for="memberRole">Role:</label>
-                    <input type="text" class="form-control" id="memberRole">
+                <div class="mb-3">
+                    <label for="memberRole" class="form-label">Role:</label>
+                    <input type="text" class="form-control" id="memberRole" required>
                 </div>
-                <div class="form-group">
-                    <label for="talentRating">Talent Rating:</label>
-                    <select class="form-control" id="talentRating">
+                <div class="mb-3">
+                    <label for="talentRating" class="form-label">Talent Rating:</label>
+                    <select class="form-select" id="talentRating" required>
                         <option value="Critical">Critical</option>
                         <option value="High">High</option>
                         <option value="Moderate">Moderate</option>
@@ -78,234 +57,221 @@
                         <option value="Emerging">Emerging</option>
                     </select>
                 </div>
-                <button id="addMemberBtn" class="btn btn-primary">Add Member</button>
+                <button type="submit" class="btn btn-primary">Add Member</button>
+            </form>
 
-                <h6 class="mt-4">Team Members</h6>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Role</th>
-                            <th>Talent</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="memberTable">
-                        <!-- Member rows will be inserted here -->
-                    </tbody>
-                </table>
-
-                <div class="chart-container">
-                    <canvas id="teamChart"></canvas>
-                </div>
-            </div>
+            <h5 class="mt-4">Team Members</h5>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Talent</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="membersTable">
+                    <!-- Members will be added here dynamically -->
+                </tbody>
+            </table>
+            <canvas id="talentChart"></canvas>
         </div>
 
-        <div class="card">
-            <div class="card-body" id="taskAnalysis">
-                <h5 id="taskAnalysisTitle">Task Analysis</h5>
-                <div class="form-group">
-                    <label for="taskName">Task Name:</label>
-                    <input type="text" class="form-control" id="taskName">
+        <div id="taskAnalysis" class="card p-3 mb-4 d-none">
+            <h5>Task Analysis for <span id="taskMemberName"></span></h5>
+            <form id="taskForm">
+                <div class="mb-3">
+                    <label for="taskName" class="form-label">Task Name:</label>
+                    <input type="text" class="form-control" id="taskName" required>
                 </div>
-                <div class="form-group">
-                    <label for="taskImportance">Task Importance:</label>
-                    <select class="form-control" id="taskImportance">
+                <div class="mb-3">
+                    <label for="taskImportance" class="form-label">Task Importance:</label>
+                    <select class="form-select" id="taskImportance" required>
                         <option value="High">High</option>
                         <option value="Medium">Medium</option>
                         <option value="Low">Low</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="taskQuality">Quality of Time Spent on Task:</label>
-                    <select class="form-control" id="taskQuality">
+                <div class="mb-3">
+                    <label for="taskTimeQuality" class="form-label">Quality of Time Spent on Task:</label>
+                    <select class="form-select" id="taskTimeQuality" required>
                         <option value="Excellent">Excellent</option>
                         <option value="Good">Good</option>
                         <option value="Poor">Poor</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="skillsRequired">Skills Required:</label>
-                    <input type="text" class="form-control" id="skillsRequired">
+                <div class="mb-3">
+                    <label for="taskSkills" class="form-label">Skills Required:</label>
+                    <input type="text" class="form-control" id="taskSkills" required>
                 </div>
-                <button id="addTaskBtn" class="btn btn-primary">Add Task</button>
+                <button type="submit" class="btn btn-primary">Add Task</button>
+            </form>
 
-                <h6 class="mt-4">Tasks for <span id="selectedMemberName"></span></h6>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Task Name</th>
-                            <th>Importance</th>
-                            <th>Quality of Time</th>
-                            <th>Skills Required</th>
-                        </tr>
-                    </thead>
-                    <tbody id="taskTable">
-                        <!-- Task rows will be inserted here -->
-                    </tbody>
-                </table>
-            </div>
+            <h5 class="mt-4">Tasks for <span id="taskMemberNameList"></span></h5>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Task Name</th>
+                        <th>Importance</th>
+                        <th>Quality of Time</th>
+                        <th>Skills Required</th>
+                    </tr>
+                </thead>
+                <tbody id="tasksTable">
+                    <!-- Tasks will be added here dynamically -->
+                </tbody>
+            </table>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const teamMembers = [];
-            const tasks = {};
-            let selectedMember = null;
-            let teamChart = null;
+        document.getElementById('teamForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            document.getElementById('displayTeamName').textContent = document.getElementById('teamName').value;
+            document.getElementById('displayTeamSize').textContent = document.getElementById('teamSize').value;
+            document.getElementById('displayTeamLead').textContent = document.getElementById('teamLead').value;
 
-            document.getElementById('submitTeamInfo').addEventListener('click', function () {
-                const teamName = document.getElementById('teamName').value;
-                const teamSize = document.getElementById('teamSize').value;
-                const teamLead = document.getElementById('teamLead').value;
+            document.getElementById('teamDashboard').classList.remove('d-none');
+        });
 
-                document.getElementById('displayTeamName').textContent = teamName;
-                document.getElementById('displayTeamSize').textContent = teamSize;
-                document.getElementById('displayTeamLead').textContent = teamLead;
+        const members = [];
+        const memberTasks = {};
+
+        document.getElementById('memberForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById('memberName').value;
+            const role = document.getElementById('memberRole').value;
+            const talent = document.getElementById('talentRating').value;
+
+            const member = { name, role, talent, tasks: [] };
+            members.push(member);
+            memberTasks[name] = [];
+
+            updateMembersTable();
+            updateChart();
+            document.getElementById('taskAnalysis').classList.remove('d-none');
+            document.getElementById('taskMemberName').textContent = name;
+            document.getElementById('taskMemberNameList').textContent = name;
+
+            document.getElementById('memberForm').reset();
+        });
+
+        function updateMembersTable() {
+            const table = document.getElementById('membersTable');
+            table.innerHTML = '';
+            members.forEach((member, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${member.name}</td>
+                    <td>${member.role}</td>
+                    <td>${member.talent}</td>
+                    <td><button class="btn btn-danger" onclick="deleteMember(${index})">Delete</button></td>
+                `;
+                table.appendChild(row);
             });
+        }
 
-            document.getElementById('addMemberBtn').addEventListener('click', function () {
-                const name = document.getElementById('memberName').value;
-                const role = document.getElementById('memberRole').value;
-                const talent = document.getElementById('talentRating').value;
+        function deleteMember(index) {
+            members.splice(index, 1);
+            updateMembersTable();
+            updateChart();
+        }
 
-                if (!name || !role || !talent) return;
-
-                teamMembers.push({ name, role, talent });
-                tasks[name] = [];
-                updateMemberTable();
-                updateChart();
-            });
-
-            function updateMemberTable() {
-                const tbody = document.getElementById('memberTable');
-                tbody.innerHTML = '';
-
-                teamMembers.forEach(member => {
-                    const row = tbody.insertRow();
-                    row.insertCell(0).textContent = member.name;
-                    row.insertCell(1).textContent = member.role;
-                    row.insertCell(2).textContent = member.talent;
-
-                    const actionCell = row.insertCell(3);
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.textContent = 'Delete';
-                    deleteBtn.classList.add('btn', 'btn-danger');
-                    deleteBtn.addEventListener('click', function () {
-                        const index = teamMembers.indexOf(member);
-                        if (index > -1) teamMembers.splice(index, 1);
-                        delete tasks[member.name];
-                        updateMemberTable();
-                        updateChart();
-                    });
-
-                    row.addEventListener('click', function () {
-                        selectedMember = member.name;
-                        document.getElementById('taskAnalysisTitle').textContent = `Task Analysis for ${member.name}`;
-                        document.getElementById('selectedMemberName').textContent = member.name;
-                        updateTaskTable(member.name);
-                    });
-
-                    actionCell.appendChild(deleteBtn);
-                });
-            }
-
-            document.getElementById('addTaskBtn').addEventListener('click', function () {
-                const taskName = document.getElementById('taskName').value;
-                const taskImportance = document.getElementById('taskImportance').value;
-                const taskQuality = document.getElementById('taskQuality').value;
-                const skillsRequired = document.getElementById('skillsRequired').value;
-
-                if (!taskName || !taskImportance || !taskQuality || !skillsRequired || !selectedMember) return;
-
-                const task = {
-                    taskName,
-                    taskImportance,
-                    taskQuality,
-                    skillsRequired
-                };
-
-                tasks[selectedMember].push(task);
-                updateTaskTable(selectedMember);
-            });
-
-            function updateTaskTable(memberName) {
-                const tbody = document.getElementById('taskTable');
-                tbody.innerHTML = '';
-
-                tasks[memberName].forEach(task => {
-                    const row = tbody.insertRow();
-                    row.insertCell(0).textContent = task.taskName;
-                    row.insertCell(1).textContent = task.taskImportance;
-                    row.insertCell(2).textContent = task.taskQuality;
-                    row.insertCell(3).textContent = task.skillsRequired;
-                });
-            }
-
-            function updateChart() {
-                if (teamChart) {
-                    teamChart.destroy();
-                }
-
-                const labels = teamMembers.map(member => member.name);
-                const talentData = teamMembers.map(member => {
-                    switch (member.talent) {
-                        case 'Critical': return 5;
-                        case 'High': return 4;
-                        case 'Moderate': return 3;
-                        case 'Low': return 2;
-                        case 'Emerging': return 1;
-                    }
-                });
-                const importanceData = teamMembers.map(member => {
-                    if (tasks[member.name].length === 0) return 0;
-                    return tasks[member.name].reduce((sum, task) => sum + (task.taskImportance === 'High' ? 3 : task.taskImportance === 'Medium' ? 2 : 1), 0) / tasks[member.name].length;
-                });
-
-                const ctx = document.getElementById('teamChart').getContext('2d');
-                teamChart = new Chart(ctx, {
-                    type: 'radar',
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: 'Talent Rating',
-                                data: talentData,
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            },
-                            {
-                                label: 'Average Task Importance',
-                                data: importanceData,
-                                borderColor: 'rgba(75, 192, 192, 1)',
-                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        function updateChart() {
+            const ctx = document.getElementById('talentChart').getContext('2d');
+            const labels = members.map(member => member.name);
+            const data = {
+                labels,
+                datasets: [
+                    {
+                        label: 'Talent Rating',
+                        data: members.map(member => {
+                            switch (member.talent) {
+                                case 'Critical': return 10;
+                                case 'High': return 8;
+                                case 'Moderate': return 6;
+                                case 'Low': return 4;
+                                case 'Emerging': return 2;
+                                default: return 0;
                             }
-                        ]
+                        }),
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
                     },
+                    {
+                        label: 'Average Task Importance',
+                        data: members.map(member => {
+                            const tasks = memberTasks[member.name];
+                            if (tasks.length === 0) return 0;
+                            const totalImportance = tasks.reduce((acc, task) => {
+                                switch (task.importance) {
+                                    case 'High': return acc + 10;
+                                    case 'Medium': return acc + 5;
+                                    case 'Low': return acc + 2;
+                                    default: return acc;
+                                }
+                            }, 0);
+                            return totalImportance / tasks.length;
+                        }),
+                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            };
+
+            if (window.talentChartInstance) {
+                window.talentChartInstance.data = data;
+                window.talentChartInstance.update();
+            } else {
+                window.talentChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data,
                     options: {
                         scales: {
-                            r: {
+                            y: {
                                 beginAtZero: true,
-                                max: 5,
-                                ticks: {
-                                    stepSize: 1,
-                                    callback: function (value) {
-                                        switch (value) {
-                                            case 1: return 'Emerging';
-                                            case 2: return 'Low';
-                                            case 3: return 'Moderate';
-                                            case 4: return 'High';
-                                            case 5: return 'Critical';
-                                        }
-                                    }
-                                }
+                                max: 10
                             }
                         }
                     }
                 });
             }
+        }
+
+        document.getElementById('taskForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById('taskName').value;
+            const importance = document.getElementById('taskImportance').value;
+            const timeQuality = document.getElementById('taskTimeQuality').value;
+            const skills = document.getElementById('taskSkills').value;
+
+            const task = { name, importance, timeQuality, skills };
+            const memberName = document.getElementById('taskMemberName').textContent;
+            memberTasks[memberName].push(task);
+
+            updateTasksTable(memberName);
+            updateChart();
+            document.getElementById('taskForm').reset();
         });
+
+        function updateTasksTable(memberName) {
+            const table = document.getElementById('tasksTable');
+            table.innerHTML = '';
+            memberTasks[memberName].forEach(task => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${task.name}</td>
+                    <td>${task.importance}</td>
+                    <td>${task.timeQuality}</td>
+                    <td>${task.skills}</td>
+                `;
+                table.appendChild(row);
+            });
+        }
     </script>
 </body>
 </html>
