@@ -54,6 +54,9 @@
         #dashboard {
             display: none;
         }
+        #taskForm, #memberTasks {
+            display: none;
+        }
         .chart-container {
             position: relative;
             height: 300px;
@@ -72,6 +75,9 @@
         th {
             background-color: #4682b4;
             color: white;
+        }
+        .member-row {
+            cursor: pointer;
         }
         .highlight {
             background-color: #ffdddd;
@@ -102,45 +108,6 @@
     <div id="dashboard" class="container">
         <h2>Team Dashboard</h2>
         <div id="teamInfo"></div>
-        
-        <!-- Task Analysis Form -->
-        <h3>Task Analysis</h3>
-        <form id="taskForm">
-            <label for="taskName">Task Name:</label>
-            <input type="text" id="taskName" required>
-            
-            <label for="taskImportance">Task Importance:</label>
-            <select id="taskImportance" required>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-            </select>
-            
-            <label for="taskBottleneck">Is This Task a Bottleneck?</label>
-            <select id="taskBottleneck" required>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-            </select>
-            
-            <label for="taskSkills">Skills Required:</label>
-            <input type="text" id="taskSkills" placeholder="List required skills, separated by commas" required>
-            
-            <button type="submit">Add Task</button>
-        </form>
-
-        <!-- Task Analysis Table -->
-        <h3>Task List</h3>
-        <table id="taskTable">
-            <thead>
-                <tr>
-                    <th>Task Name</th>
-                    <th>Importance</th>
-                    <th>Bottleneck</th>
-                    <th>Skills Required</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
 
         <h3>Team Members</h3>
         <table id="memberTable">
@@ -152,6 +119,49 @@
             </thead>
             <tbody></tbody>
         </table>
+
+        <!-- Task Form for Individual Team Members -->
+        <div id="taskForm">
+            <h3 id="selectedMemberTitle"></h3>
+            <form id="memberTaskForm">
+                <label for="taskName">Task Name:</label>
+                <input type="text" id="taskName" required>
+                
+                <label for="taskImportance">Task Importance:</label>
+                <select id="taskImportance" required>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+                
+                <label for="taskBottleneck">Is This Task a Bottleneck?</label>
+                <select id="taskBottleneck" required>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+                
+                <label for="taskSkills">Skills Required:</label>
+                <input type="text" id="taskSkills" placeholder="List required skills, separated by commas" required>
+                
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+
+        <!-- Tasks for the Selected Team Member -->
+        <div id="memberTasks">
+            <h3>Tasks for <span id="memberNameDisplay"></span></h3>
+            <table id="taskTable">
+                <thead>
+                    <tr>
+                        <th>Task Name</th>
+                        <th>Importance</th>
+                        <th>Bottleneck</th>
+                        <th>Skills Required</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Include Chart.js library -->
@@ -162,11 +172,15 @@
         document.addEventListener('DOMContentLoaded', function() {
             let teamChart;
             let teamMembers = [];
-            let tasks = [];
+            let memberTasks = {};
 
             const teamForm = document.getElementById('teamForm');
-            const taskForm = document.getElementById('taskForm');
+            const memberForm = document.getElementById('memberForm');
             const dashboard = document.getElementById('dashboard');
+            const taskForm = document.getElementById('taskForm');
+            const memberTaskForm = document.getElementById('memberTaskForm');
+            const memberTasksDiv = document.getElementById('memberTasks');
+            let selectedMember = null;
 
             teamForm.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -185,36 +199,59 @@
                 dashboard.style.display = 'block';
             });
 
-            taskForm.addEventListener('submit', function(e) {
+            // Add new team member
+            memberForm.addEventListener('submit', function(e) {
                 e.preventDefault();
 
-                const taskName = document.getElementById('taskName').value;
-                const taskImportance = document.getElementById('taskImportance').value;
-                const taskBottleneck = document.getElementById('taskBottleneck').value;
-                const taskSkills = document.getElementById('taskSkills').value.split(',');
+                const name = document.getElementById('memberName').value;
+                const role = document.getElementById('memberRole').value;
 
-                tasks.push({
-                    name: taskName,
-                    importance: taskImportance,
-                    bottleneck: taskBottleneck,
-                    skills: taskSkills
-                });
+                teamMembers.push({ name: name, role: role });
+                memberTasks[name] = [];
 
-                updateTaskTable();
-                analyzeTasks();
+                updateMemberTable();
 
-                // Clear the form
-                document.getElementById('taskName').value = '';
-                document.getElementById('taskImportance').value = 'high';
-                document.getElementById('taskBottleneck').value = 'no';
-                document.getElementById('taskSkills').value = '';
+                document.getElementById('memberName').value = '';
+                document.getElementById('memberRole').value = '';
             });
 
-            function updateTaskTable() {
+            // Update the team members table
+            function updateMemberTable() {
+                const tbody = document.querySelector('#memberTable tbody');
+                tbody.innerHTML = '';
+
+                teamMembers.forEach(function(member) {
+                    const row = tbody.insertRow();
+                    row.classList.add('member-row');
+                    const nameCell = row.insertCell(0);
+                    const roleCell = row.insertCell(1);
+
+                    nameCell.textContent = member.name;
+                    roleCell.textContent = member.role;
+
+                    row.addEventListener('click', function() {
+                        selectedMember = member.name;
+                        displayMemberTasks(selectedMember);
+                    });
+                });
+            }
+
+            // Display tasks for the selected member
+            function displayMemberTasks(memberName) {
+                document.getElementById('selectedMemberTitle').textContent = `Task Analysis for ${memberName}`;
+                document.getElementById('memberNameDisplay').textContent = memberName;
+                taskForm.style.display = 'block';
+                memberTasksDiv.style.display = 'block';
+
+                updateTaskTable(memberName);
+            }
+
+            // Update the task table with tasks for the selected member
+            function updateTaskTable(memberName) {
                 const tbody = document.querySelector('#taskTable tbody');
                 tbody.innerHTML = '';
 
-                tasks.forEach(function(task) {
+                memberTasks[memberName].forEach(function(task) {
                     const row = tbody.insertRow();
                     const nameCell = row.insertCell(0);
                     const importanceCell = row.insertCell(1);
@@ -232,26 +269,32 @@
                 });
             }
 
-            function analyzeTasks() {
-                // Example of simple analysis - log tasks marked as bottlenecks
-                const bottleneckTasks = tasks.filter(task => task.bottleneck === 'yes');
-                console.log("Bottleneck Tasks:", bottleneckTasks);
-                // Further analysis can be added here
-            }
+            // Handle task submission for a selected member
+            memberTaskForm.addEventListener('submit', function(e) {
+                e.preventDefault();
 
-            function updateMemberTable() {
-                const tbody = document.querySelector('#memberTable tbody');
-                tbody.innerHTML = '';
+                const taskName = document.getElementById('taskName').value;
+                const taskImportance = document.getElementById('taskImportance').value;
+                const taskBottleneck = document.getElementById('taskBottleneck').value;
+                const taskSkills = document.getElementById('taskSkills').value.split(',');
 
-                teamMembers.forEach(function(member) {
-                    const row = tbody.insertRow();
-                    const nameCell = row.insertCell(0);
-                    const roleCell = row.insertCell(1);
+                if (selectedMember) {
+                    memberTasks[selectedMember].push({
+                        name: taskName,
+                        importance: taskImportance,
+                        bottleneck: taskBottleneck,
+                        skills: taskSkills
+                    });
 
-                    nameCell.textContent = member.name;
-                    roleCell.textContent = member.role;
-                });
-            }
+                    updateTaskTable(selectedMember);
+
+                    // Clear the form
+                    document.getElementById('taskName').value = '';
+                    document.getElementById('taskImportance').value = 'high';
+                    document.getElementById('taskBottleneck').value = 'no';
+                    document.getElementById('taskSkills').value = '';
+                }
+            });
 
             function updateChart() {
                 const roles = {};
