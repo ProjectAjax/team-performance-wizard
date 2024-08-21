@@ -124,12 +124,17 @@
         </table>
     </div>
 
-    <!-- Include Chart.js library -->
+    <!-- Include Chart.js library before your custom script -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
 
     <!-- Your custom JavaScript code -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            if (typeof Chart !== "function") {
+                console.error("Chart.js failed to load.");
+                return;
+            }
+            
             let teamChart;
             let teamMembers = [];
 
@@ -137,65 +142,54 @@
             const memberForm = document.getElementById('memberForm');
             const dashboard = document.getElementById('dashboard');
 
-            if (teamForm) {
-                teamForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    var teamName = document.getElementById('teamName').value;
-                    var teamSize = parseInt(document.getElementById('teamSize').value);
-                    var teamLead = document.getElementById('teamLead').value;
-                    
-                    // Update dashboard
-                    const teamInfo = document.getElementById('teamInfo');
-                    if (teamInfo) {
-                        teamInfo.innerHTML = `
-                            <p><strong>Team Name:</strong> ${teamName}</p>
-                            <p><strong>Team Size:</strong> ${teamSize}</p>
-                            <p><strong>Team Lead:</strong> ${teamLead}</p>
-                        `;
-                    }
-                    
-                    // Show dashboard
-                    if (dashboard) {
-                        dashboard.style.display = 'block';
-                    }
-                    
-                    updateChart();
-                });
-            } else {
-                console.error('Team form not found');
-            }
+            teamForm.addEventListener('submit', function(e) {
+                e.preventDefault();
 
-            if (memberForm) {
-                memberForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    var name = document.getElementById('memberName').value;
-                    var role = document.getElementById('memberRole').value;
-                    
-                    teamMembers.push({name: name, role: role});
-                    
-                    updateMemberTable();
-                    updateChart();
-                    
-                    // Clear the form
-                    document.getElementById('memberName').value = '';
-                    document.getElementById('memberRole').value = '';
-                });
-            } else {
-                console.error('Member form not found');
-            }
+                var teamName = document.getElementById('teamName').value;
+                var teamSize = parseInt(document.getElementById('teamSize').value);
+                var teamLead = document.getElementById('teamLead').value;
+
+                const teamInfo = document.getElementById('teamInfo');
+                if (teamInfo) {
+                    teamInfo.innerHTML = `
+                        <p><strong>Team Name:</strong> ${teamName}</p>
+                        <p><strong>Team Size:</strong> ${teamSize}</p>
+                        <p><strong>Team Lead:</strong> ${teamLead}</p>
+                    `;
+                }
+
+                if (dashboard) {
+                    dashboard.style.display = 'block';
+                }
+
+                updateChart();
+            });
+
+            memberForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                var name = document.getElementById('memberName').value;
+                var role = document.getElementById('memberRole').value;
+
+                teamMembers.push({ name: name, role: role });
+
+                updateMemberTable();
+                updateChart();
+
+                document.getElementById('memberName').value = '';
+                document.getElementById('memberRole').value = '';
+            });
 
             function updateMemberTable() {
                 var tbody = document.querySelector('#memberTable tbody');
                 if (tbody) {
                     tbody.innerHTML = '';
-                    
+
                     teamMembers.forEach(function(member) {
                         var row = tbody.insertRow();
                         var nameCell = row.insertCell(0);
                         var roleCell = row.insertCell(1);
-                        
+
                         nameCell.textContent = member.name;
                         roleCell.textContent = member.role;
                     });
@@ -209,15 +203,15 @@
                 teamMembers.forEach(function(member) {
                     roles[member.role] = (roles[member.role] || 0) + 1;
                 });
-                
+
                 var ctx = document.getElementById('teamChart');
                 if (ctx) {
                     ctx = ctx.getContext('2d');
-                    
+
                     if (teamChart) {
                         teamChart.destroy();
                     }
-                    
+
                     teamChart = new Chart(ctx, {
                         type: 'pie',
                         data: {
