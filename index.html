@@ -118,6 +118,14 @@
             <label for="memberRole">Role:</label>
             <input type="text" id="memberRole" required>
             
+            <label for="talentRating">Talent Rating:</label>
+            <select id="talentRating" required>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+                <option value="Top Talent">Top Talent</option>
+            </select>
+            
             <button type="submit">Add Member</button>
         </form>
 
@@ -127,6 +135,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Role</th>
+                    <th>Talent Rating</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -180,6 +189,7 @@
         <!-- Chart Container -->
         <div class="chart-container">
             <canvas id="teamChart"></canvas>
+            <canvas id="spiderChart"></canvas>
         </div>
     </div>
 
@@ -190,6 +200,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let teamChart;
+            let spiderChart;
             let teamMembers = [];
             let memberTasks = {};
 
@@ -224,15 +235,17 @@
 
                 const name = document.getElementById('memberName').value;
                 const role = document.getElementById('memberRole').value;
+                const talentRating = document.getElementById('talentRating').value;
 
-                teamMembers.push({ name: name, role: role });
+                teamMembers.push({ name: name, role: role, talentRating: talentRating });
                 memberTasks[name] = [];
 
                 updateMemberTable();
-                updateChart();
+                updateCharts();
 
                 document.getElementById('memberName').value = '';
                 document.getElementById('memberRole').value = '';
+                document.getElementById('talentRating').value = 'Medium';
             });
 
             // Update the team members table
@@ -245,28 +258,26 @@
                     row.classList.add('member-row');
                     const nameCell = row.insertCell(0);
                     const roleCell = row.insertCell(1);
+                    const talentCell = row.insertCell(2);
 
                     nameCell.textContent = member.name;
                     roleCell.textContent = member.role;
+                    talentCell.textContent = member.talentRating;
 
+                    // Event listener for clicking a row to manage tasks
                     row.addEventListener('click', function() {
                         selectedMember = member.name;
-                        displayMemberTasks(selectedMember);
+                        document.getElementById('selectedMemberTitle').textContent = `Tasks for ${selectedMember}`;
+                        document.getElementById('memberNameDisplay').textContent = selectedMember;
+                        taskForm.style.display = 'block';
+                        memberTasksDiv.style.display = 'block';
+                        updateTaskTable(selectedMember);
+                        updateSpiderChart(selectedMember);
                     });
                 });
             }
 
-            // Display tasks for the selected member
-            function displayMemberTasks(memberName) {
-                document.getElementById('selectedMemberTitle').textContent = `Task Analysis for ${memberName}`;
-                document.getElementById('memberNameDisplay').textContent = memberName;
-                taskForm.style.display = 'block';
-                memberTasksDiv.style.display = 'block';
-
-                updateTaskTable(memberName);
-            }
-
-            // Update the task table with tasks for the selected member
+            // Update the tasks table for a selected member
             function updateTaskTable(memberName) {
                 const tbody = document.querySelector('#taskTable tbody');
                 tbody.innerHTML = '';
@@ -307,8 +318,8 @@
                     });
 
                     updateTaskTable(selectedMember);
+                    updateSpiderChart(selectedMember);
 
-                    // Clear the form
                     document.getElementById('taskName').value = '';
                     document.getElementById('taskImportance').value = 'high';
                     document.getElementById('taskTimeQuality').value = 'good';
@@ -316,7 +327,8 @@
                 }
             });
 
-            function updateChart() {
+            // Update the team composition chart
+            function updateCharts() {
                 const roles = {};
                 teamMembers.forEach(function(member) {
                     roles[member.role] = (roles[member.role] || 0) + 1;
@@ -324,13 +336,13 @@
 
                 const ctx = document.getElementById('teamChart');
                 if (ctx) {
-                    ctx = ctx.getContext('2d');
+                    const context = ctx.getContext('2d');
 
                     if (teamChart) {
                         teamChart.destroy();
                     }
 
-                    teamChart = new Chart(ctx, {
+                    teamChart = new Chart(context, {
                         type: 'pie',
                         data: {
                             labels: Object.keys(roles),
@@ -346,6 +358,86 @@
                                 title: {
                                     display: true,
                                     text: 'Team Composition by Role'
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Update the spider chart for a selected member
+            function updateSpiderChart(memberName) {
+                const taskData = memberTasks[memberName];
+
+                const labels = taskData.map(task => task.name);
+                const importanceData = taskData.map(task => task.importance === 'high' ? 3 : task.importance === 'medium' ? 2 : 1);
+                const timeQualityData = taskData.map(task => task.timeQuality === 'excellent' ? 3 : task.timeQuality === 'good' ? 2 : task.timeQuality === 'average' ? 1 : 0);
+                const skillsCountData = taskData.map(task => task.skills.length);
+
+                const ctx = document.getElementById('spiderChart');
+                if (ctx) {
+                    const context = ctx.getContext('2d');
+
+                    if (spiderChart) {
+                        spiderChart.destroy();
+                    }
+
+                    spiderChart = new Chart(context, {
+                        type: 'radar',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Task Importance',
+                                    data: importanceData,
+                                    fill: true,
+                                    backgroundColor: 'rgba(70,130,180,0.2)',
+                                    borderColor: 'rgba(70,130,180,1)',
+                                    pointBackgroundColor: 'rgba(70,130,180,1)',
+                                    pointBorderColor: '#fff',
+                                    pointHoverBackgroundColor: '#fff',
+                                    pointHoverBorderColor: 'rgba(70,130,180,1)'
+                                },
+                                {
+                                    label: 'Time Quality',
+                                    data: timeQualityData,
+                                    fill: true,
+                                    backgroundColor: 'rgba(135,206,235,0.2)',
+                                    borderColor: 'rgba(135,206,235,1)',
+                                    pointBackgroundColor: 'rgba(135,206,235,1)',
+                                    pointBorderColor: '#fff',
+                                    pointHoverBackgroundColor: '#fff',
+                                    pointHoverBorderColor: 'rgba(135,206,235,1)'
+                                },
+                                {
+                                    label: 'Skills Count',
+                                    data: skillsCountData,
+                                    fill: true,
+                                    backgroundColor: 'rgba(32,178,170,0.2)',
+                                    borderColor: 'rgba(32,178,170,1)',
+                                    pointBackgroundColor: 'rgba(32,178,170,1)',
+                                    pointBorderColor: '#fff',
+                                    pointHoverBackgroundColor: '#fff',
+                                    pointHoverBorderColor: 'rgba(32,178,170,1)'
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: `Performance Analysis for ${memberName}`
+                                }
+                            },
+                            scales: {
+                                r: {
+                                    angleLines: {
+                                        display: false
+                                    },
+                                    suggestedMin: 0,
+                                    suggestedMax: 3
                                 }
                             }
                         }
