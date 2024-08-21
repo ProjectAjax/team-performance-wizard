@@ -69,8 +69,14 @@
                     <input type="text" class="form-control" id="memberRole">
                 </div>
                 <div class="form-group">
-                    <label for="talentRating">Talent Rating (1-10):</label>
-                    <input type="number" class="form-control" id="talentRating">
+                    <label for="talentRating">Talent Rating:</label>
+                    <select class="form-control" id="talentRating">
+                        <option value="Critical">Critical</option>
+                        <option value="High">High</option>
+                        <option value="Moderate">Moderate</option>
+                        <option value="Low">Low</option>
+                        <option value="Emerging">Emerging</option>
+                    </select>
                 </div>
                 <button id="addMemberBtn" class="btn btn-primary">Add Member</button>
 
@@ -97,7 +103,7 @@
 
         <div class="card">
             <div class="card-body" id="taskAnalysis">
-                <h5>Task Analysis for [Member Name]</h5>
+                <h5 id="taskAnalysisTitle">Task Analysis</h5>
                 <div class="form-group">
                     <label for="taskName">Task Name:</label>
                     <input type="text" class="form-control" id="taskName">
@@ -162,9 +168,9 @@
             document.getElementById('addMemberBtn').addEventListener('click', function () {
                 const name = document.getElementById('memberName').value;
                 const role = document.getElementById('memberRole').value;
-                const talent = parseInt(document.getElementById('talentRating').value, 10);
+                const talent = document.getElementById('talentRating').value;
 
-                if (!name || !role || isNaN(talent)) return;
+                if (!name || !role || !talent) return;
 
                 teamMembers.push({ name, role, talent });
                 tasks[name] = [];
@@ -196,7 +202,7 @@
 
                     row.addEventListener('click', function () {
                         selectedMember = member.name;
-                        document.querySelector('#taskAnalysis h5').textContent = `Task Analysis for ${member.name}`;
+                        document.getElementById('taskAnalysisTitle').textContent = `Task Analysis for ${member.name}`;
                         document.getElementById('selectedMemberName').textContent = member.name;
                         updateTaskTable(member.name);
                     });
@@ -228,8 +234,6 @@
                 const tbody = document.getElementById('taskTable');
                 tbody.innerHTML = '';
 
-                if (!tasks[memberName]) return;
-
                 tasks[memberName].forEach(task => {
                     const row = tbody.insertRow();
                     row.insertCell(0).textContent = task.taskName;
@@ -245,7 +249,15 @@
                 }
 
                 const labels = teamMembers.map(member => member.name);
-                const talentData = teamMembers.map(member => member.talent);
+                const talentData = teamMembers.map(member => {
+                    switch (member.talent) {
+                        case 'Critical': return 5;
+                        case 'High': return 4;
+                        case 'Moderate': return 3;
+                        case 'Low': return 2;
+                        case 'Emerging': return 1;
+                    }
+                });
                 const importanceData = teamMembers.map(member => {
                     if (tasks[member.name].length === 0) return 0;
                     return tasks[member.name].reduce((sum, task) => sum + (task.taskImportance === 'High' ? 3 : task.taskImportance === 'Medium' ? 2 : 1), 0) / tasks[member.name].length;
@@ -275,7 +287,19 @@
                         scales: {
                             r: {
                                 beginAtZero: true,
-                                max: 10
+                                max: 5,
+                                ticks: {
+                                    stepSize: 1,
+                                    callback: function (value) {
+                                        switch (value) {
+                                            case 1: return 'Emerging';
+                                            case 2: return 'Low';
+                                            case 3: return 'Moderate';
+                                            case 4: return 'High';
+                                            case 5: return 'Critical';
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
