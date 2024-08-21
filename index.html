@@ -21,11 +21,8 @@
         .logo img {
             max-width: 150px;
         }
-        h1, h2 {
+        h1, h2, h3 {
             text-align: center;
-        }
-        .chart-container {
-            margin-top: 30px;
         }
     </style>
 </head>
@@ -144,14 +141,11 @@
                 <tbody id="tasksTable"></tbody>
             </table>
 
-            <!-- Chart -->
-            <div class="chart-container">
-                <canvas id="teamChart"></canvas>
-            </div>
+            <!-- Generate Report Button -->
+            <button id="generateReport" class="btn btn-success" style="display:none;">Generate Report</button>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const teamInfo = {};
         const members = [];
@@ -196,7 +190,7 @@
                 `;
                 tableBody.appendChild(row);
             });
-            updateChart();
+            document.getElementById('generateReport').style.display = members.length > 0 ? 'block' : 'none';
         }
 
         function deleteMember(index) {
@@ -210,40 +204,6 @@
             document.getElementById('taskForm').style.display = 'block';
             document.getElementById('taskMemberName').textContent = name;
             updateTasksTable(name);
-        }
-
-        function updateChart() {
-            const ctx = document.getElementById('teamChart').getContext('2d');
-            const data = {
-                labels: members.map(member => member.name),
-                datasets: [{
-                    label: 'Talent Rating',
-                    data: members.map(member => {
-                        switch (member.talent) {
-                            case 'Critical': return 10;
-                            case 'High': return 8;
-                            case 'Moderate': return 6;
-                            case 'Low': return 4;
-                            case 'Emerging': return 2;
-                        }
-                    }),
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            };
-            new Chart(ctx, {
-                type: 'bar',
-                data: data,
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 10
-                        }
-                    }
-                }
-            });
         }
 
         document.getElementById('taskForm').addEventListener('submit', function (e) {
@@ -276,6 +236,11 @@
                 tableBody.appendChild(row);
             });
         }
+
+        document.getElementById('generateReport').addEventListener('click', function () {
+            // Logic to generate the report based on collected data
+            alert('Report generation is not implemented yet. This will summarize and visualize the team data.');
+        });
     </script>
 </body>
 </html>
