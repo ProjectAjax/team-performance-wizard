@@ -1,245 +1,114 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Training Culture Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f0f8ff;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        h1, h2, h3 {
-            color: #4682b4;
-        }
-        form {
-            margin-top: 20px;
-        }
-        label {
-            display: block;
-            margin-top: 10px;
-        }
-        input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #4682b4;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #36648b;
-        }
-        #dashboard {
-            display: none;
-        }
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #4682b4;
-            color: white;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Welcome to Training Culture</h1>
-        <p>Your journey to optimal team performance starts here!</p>
-        
-        <form id="teamForm">
-            <label for="teamName">Team Name:</label>
-            <input type="text" id="teamName" name="teamName" required>
+document.addEventListener('DOMContentLoaded', function() {
+    let teamChart;
+    let teamMembers = [];
+
+    const teamForm = document.getElementById('teamForm');
+    const memberForm = document.getElementById('memberForm');
+    const dashboard = document.getElementById('dashboard');
+
+    if (teamForm) {
+        teamForm.addEventListener('submit', function(e) {
+            e.preventDefault();  // Prevent form from submitting
+
+            var teamName = document.getElementById('teamName').value;
+            var teamSize = parseInt(document.getElementById('teamSize').value);
+            var teamLead = document.getElementById('teamLead').value;
             
-            <label for="teamSize">Team Size:</label>
-            <input type="number" id="teamSize" name="teamSize" required>
-            
-            <label for="teamLead">Team Lead:</label>
-            <input type="text" id="teamLead" name="teamLead" required>
-            
-            <button type="submit">Submit Team Info</button>
-        </form>
-    </div>
-
-    <div id="dashboard" class="container">
-        <h2>Team Dashboard</h2>
-        <div id="teamInfo"></div>
-        <div class="chart-container">
-            <canvas id="teamChart"></canvas>
-        </div>
-        
-        <h3>Add Team Member</h3>
-        <form id="memberForm">
-            <label for="memberName">Name:</label>
-            <input type="text" id="memberName" required>
-            
-            <label for="memberRole">Role:</label>
-            <input type="text" id="memberRole" required>
-            
-            <button type="submit">Add Member</button>
-        </form>
-        
-        <h3>Team Members</h3>
-        <table id="memberTable">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Role</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let teamChart;
-        let teamMembers = [];
-
-        const teamForm = document.getElementById('teamForm');
-        const memberForm = document.getElementById('memberForm');
-        const dashboard = document.getElementById('dashboard');
-
-        if (teamForm) {
-            teamForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                var teamName = document.getElementById('teamName').value;
-                var teamSize = parseInt(document.getElementById('teamSize').value);
-                var teamLead = document.getElementById('teamLead').value;
-                
-                // Update dashboard
-                const teamInfo = document.getElementById('teamInfo');
-                if (teamInfo) {
-                    teamInfo.innerHTML = `
-                        <p><strong>Team Name:</strong> ${teamName}</p>
-                        <p><strong>Team Size:</strong> ${teamSize}</p>
-                        <p><strong>Team Lead:</strong> ${teamLead}</p>
-                    `;
-                }
-                
-                // Show dashboard
-                if (dashboard) {
-                    dashboard.style.display = 'block';
-                }
-                
-                updateChart();
-            });
-        } else {
-            console.error('Team form not found');
-        }
-
-        if (memberForm) {
-            memberForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                var name = document.getElementById('memberName').value;
-                var role = document.getElementById('memberRole').value;
-                
-                teamMembers.push({name: name, role: role});
-                
-                updateMemberTable();
-                updateChart();
-                
-                // Clear the form
-                document.getElementById('memberName').value = '';
-                document.getElementById('memberRole').value = '';
-            });
-        } else {
-            console.error('Member form not found');
-        }
-
-        function updateMemberTable() {
-            var tbody = document.querySelector('#memberTable tbody');
-            if (tbody) {
-                tbody.innerHTML = '';
-                
-                teamMembers.forEach(function(member) {
-                    var row = tbody.insertRow();
-                    var nameCell = row.insertCell(0);
-                    var roleCell = row.insertCell(1);
-                    
-                    nameCell.textContent = member.name;
-                    roleCell.textContent = member.role;
-                });
-            } else {
-                console.error('Member table not found');
+            // Update dashboard
+            const teamInfo = document.getElementById('teamInfo');
+            if (teamInfo) {
+                teamInfo.innerHTML = `
+                    <p><strong>Team Name:</strong> ${teamName}</p>
+                    <p><strong>Team Size:</strong> ${teamSize}</p>
+                    <p><strong>Team Lead:</strong> ${teamLead}</p>
+                `;
             }
-        }
-
-        function updateChart() {
-            var roles = {};
-            teamMembers.forEach(function(member) {
-                roles[member.role] = (roles[member.role] || 0) + 1;
-            });
             
-            var ctx = document.getElementById('teamChart');
-            if (ctx) {
-                ctx = ctx.getContext('2d');
+            // Show dashboard
+            if (dashboard) {
+                dashboard.style.display = 'block';
+            }
+            
+            updateChart();
+        });
+    } else {
+        console.error('Team form not found');
+    }
+
+    if (memberForm) {
+        memberForm.addEventListener('submit', function(e) {
+            e.preventDefault();  // Prevent form from submitting
+
+            var name = document.getElementById('memberName').value;
+            var role = document.getElementById('memberRole').value;
+            
+            teamMembers.push({name: name, role: role});
+            
+            updateMemberTable();
+            updateChart();
+            
+            // Clear the form
+            document.getElementById('memberName').value = '';
+            document.getElementById('memberRole').value = '';
+        });
+    } else {
+        console.error('Member form not found');
+    }
+
+    function updateMemberTable() {
+        var tbody = document.querySelector('#memberTable tbody');
+        if (tbody) {
+            tbody.innerHTML = '';
+            
+            teamMembers.forEach(function(member) {
+                var row = tbody.insertRow();
+                var nameCell = row.insertCell(0);
+                var roleCell = row.insertCell(1);
                 
-                if (teamChart) {
-                    teamChart.destroy();
-                }
-                
-                teamChart = new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: Object.keys(roles),
-                        datasets: [{
-                            data: Object.values(roles),
-                            backgroundColor: ['#4682b4', '#87CEEB', '#20B2AA', '#00CED1', '#48D1CC']
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'Team Composition by Role'
-                            }
+                nameCell.textContent = member.name;
+                roleCell.textContent = member.role;
+            });
+        } else {
+            console.error('Member table not found');
+        }
+    }
+
+    function updateChart() {
+        var roles = {};
+        teamMembers.forEach(function(member) {
+            roles[member.role] = (roles[member.role] || 0) + 1;
+        });
+        
+        var ctx = document.getElementById('teamChart');
+        if (ctx) {
+            ctx = ctx.getContext('2d');
+            
+            if (teamChart) {
+                teamChart.destroy();
+            }
+            
+            teamChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(roles),
+                    datasets: [{
+                        data: Object.values(roles),
+                        backgroundColor: ['#4682b4', '#87CEEB', '#20B2AA', '#00CED1', '#48D1CC']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Team Composition by Role'
                         }
                     }
-                });
-            } else {
-                console.error('Chart canvas not found');
-            }
+                }
+            });
+        } else {
+            console.error('Chart canvas not found');
         }
-    });
-    </script>
-</body>
-</html>
+    }
+});
