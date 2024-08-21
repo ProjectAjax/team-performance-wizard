@@ -7,30 +7,34 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            line-height: 1.6;
+            background-color: #f0f8ff;
             color: #333;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f0f8ff;
         }
+
         .container {
-            background-color: white;
+            background-color: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
+
         h1, h2, h3 {
             color: #4682b4;
         }
+
         form {
             margin-top: 20px;
         }
+
         label {
             display: block;
             margin-top: 10px;
         }
+
         input[type="text"], input[type="number"], select {
             width: 100%;
             padding: 8px;
@@ -39,6 +43,7 @@
             border-radius: 4px;
             box-sizing: border-box;
         }
+
         button {
             background-color: #4682b4;
             color: white;
@@ -48,69 +53,48 @@
             cursor: pointer;
             margin-top: 10px;
         }
+
         button:hover {
             background-color: #36648b;
         }
-        #dashboard, #taskForm, #memberTasks {
-            display: none;
-        }
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
+
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
+
         th {
             background-color: #4682b4;
             color: white;
         }
-        .member-row {
-            cursor: pointer;
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            margin-top: 30px;
         }
-        .highlight {
-            background-color: #ffdddd;
-        }
-        .delete-button {
-            background-color: #ff6b6b;
-            color: white;
-            border: none;
-            border-radius: 4px;
+
+        .btn-delete {
+            color: red;
             cursor: pointer;
-            padding: 5px 10px;
             margin-left: 10px;
-        }
-        .delete-button:hover {
-            background-color: #ff3b3b;
-        }
-        .back-button {
-            background-color: #4682b4;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            padding: 5px 10px;
-            margin-top: 10px;
-        }
-        .back-button:hover {
-            background-color: #36648b;
         }
     </style>
 </head>
 <body>
+
     <div class="container">
         <h1>Welcome to Training Culture</h1>
         <p>Your journey to optimal team performance starts here!</p>
         
-        <!-- Team Information Form -->
         <form id="teamForm">
             <label for="teamName">Team Name:</label>
             <input type="text" id="teamName" name="teamName" required>
@@ -125,12 +109,10 @@
         </form>
     </div>
 
-    <!-- Dashboard Section -->
-    <div id="dashboard" class="container">
+    <div id="dashboard" class="container" style="display: none;">
         <h2>Team Dashboard</h2>
         <div id="teamInfo"></div>
-
-        <!-- Add Team Member Form -->
+        
         <h3>Add Team Member</h3>
         <form id="memberForm">
             <label for="memberName">Name:</label>
@@ -139,63 +121,52 @@
             <label for="memberRole">Role:</label>
             <input type="text" id="memberRole" required>
             
-            <label for="talentRating">Talent Rating:</label>
-            <select id="talentRating" required>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-                <option value="Top Talent">Top Talent</option>
-            </select>
+            <label for="memberTalent">Talent Rating (1-10):</label>
+            <input type="number" id="memberTalent" required min="1" max="10">
             
             <button type="submit">Add Member</button>
         </form>
-
+        
         <h3>Team Members</h3>
         <table id="memberTable">
             <thead>
                 <tr>
                     <th>Name</th>
                     <th>Role</th>
-                    <th>Talent Rating</th>
+                    <th>Talent</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody></tbody>
         </table>
-
-        <!-- Task Form for Individual Team Members -->
-        <div id="taskForm">
-            <h3 id="selectedMemberTitle"></h3>
-            <form id="memberTaskForm">
+        
+        <div id="taskAnalysis" style="display: none;">
+            <h3 id="taskAnalysisTitle"></h3>
+            <form id="taskForm">
                 <label for="taskName">Task Name:</label>
                 <input type="text" id="taskName" required>
                 
                 <label for="taskImportance">Task Importance:</label>
                 <select id="taskImportance" required>
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
                 </select>
-                
-                <label for="taskTimeQuality">Quality of Time Spent on Task:</label>
-                <select id="taskTimeQuality" required>
-                    <option value="excellent">Excellent</option>
-                    <option value="good">Good</option>
-                    <option value="average">Average</option>
-                    <option value="poor">Poor</option>
+
+                <label for="taskQuality">Quality of Time Spent on Task:</label>
+                <select id="taskQuality" required>
+                    <option value="Excellent">Excellent</option>
+                    <option value="Good">Good</option>
+                    <option value="Poor">Poor</option>
                 </select>
                 
                 <label for="taskSkills">Skills Required:</label>
-                <input type="text" id="taskSkills" placeholder="List required skills, separated by commas" required>
+                <input type="text" id="taskSkills" placeholder="List required skills, separated by commas">
                 
                 <button type="submit">Add Task</button>
             </form>
-            <button class="back-button" onclick="goBackToMemberList()">Go Back to Member List</button>
-        </div>
 
-        <!-- Tasks for the Selected Team Member -->
-        <div id="memberTasks">
-            <h3>Tasks for <span id="memberNameDisplay"></span></h3>
+            <h3 id="tasksTitle"></h3>
             <table id="taskTable">
                 <thead>
                     <tr>
@@ -203,47 +174,42 @@
                         <th>Importance</th>
                         <th>Quality of Time</th>
                         <th>Skills Required</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
-            <button class="back-button" onclick="goBackToMemberList()">Go Back to Member List</button>
         </div>
-
-        <!-- Chart Container -->
+        
         <div class="chart-container">
             <canvas id="teamChart"></canvas>
-            <canvas id="spiderChart"></canvas>
         </div>
     </div>
 
-    <!-- Include Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
-
-    <!-- Custom JavaScript Code -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            let teamChart;
-            let spiderChart;
             let teamMembers = [];
-            let memberTasks = {};
+            let tasks = {};
+            let currentMember = null;
 
             const teamForm = document.getElementById('teamForm');
             const memberForm = document.getElementById('memberForm');
-            const dashboard = document.getElementById('dashboard');
             const taskForm = document.getElementById('taskForm');
-            const memberTaskForm = document.getElementById('memberTaskForm');
-            const memberTasksDiv = document.getElementById('memberTasks');
-            let selectedMember = null;
+            const dashboard = document.getElementById('dashboard');
+            const teamInfo = document.getElementById('teamInfo');
+            const taskAnalysis = document.getElementById('taskAnalysis');
+            const taskAnalysisTitle = document.getElementById('taskAnalysisTitle');
+            const taskTable = document.getElementById('taskTable').getElementsByTagName('tbody')[0];
+            const tasksTitle = document.getElementById('tasksTitle');
 
             teamForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-
+                
                 const teamName = document.getElementById('teamName').value;
-                const teamSize = parseInt(document.getElementById('teamSize').value);
+                const teamSize = document.getElementById('teamSize').value;
                 const teamLead = document.getElementById('teamLead').value;
 
-                const teamInfo = document.getElementById('teamInfo');
                 teamInfo.innerHTML = `
                     <p><strong>Team Name:</strong> ${teamName}</p>
                     <p><strong>Team Size:</strong> ${teamSize}</p>
@@ -253,248 +219,152 @@
                 dashboard.style.display = 'block';
             });
 
-            // Add new team member
             memberForm.addEventListener('submit', function(e) {
                 e.preventDefault();
 
                 const name = document.getElementById('memberName').value;
                 const role = document.getElementById('memberRole').value;
-                const talentRating = document.getElementById('talentRating').value;
+                const talent = document.getElementById('memberTalent').value;
 
-                teamMembers.push({name, role, talentRating});
-                memberTasks[name] = [];
-
+                const member = { name, role, talent };
+                teamMembers.push(member);
+                tasks[name] = [];
                 updateMemberTable();
-                updateCharts();
-
-                // Clear the form
-                memberForm.reset();
+                resetMemberForm();
             });
 
-            // Update the member table
-            function updateMemberTable() {
-                const tbody = document.querySelector('#memberTable tbody');
-                tbody.innerHTML = '';
-
-                teamMembers.forEach(function(member, index) {
-                    const row = tbody.insertRow();
-                    row.classList.add('member-row');
-                    const nameCell = row.insertCell(0);
-                    const roleCell = row.insertCell(1);
-                    const talentCell = row.insertCell(2);
-                    const actionCell = row.insertCell(3);
-
-                    nameCell.textContent = member.name;
-                    roleCell.textContent = member.role;
-                    talentCell.textContent = member.talentRating;
-
-                    // Delete button
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = 'Delete';
-                    deleteButton.classList.add('delete-button');
-                    deleteButton.addEventListener('click', function() {
-                        deleteMember(index);
-                    });
-                    actionCell.appendChild(deleteButton);
-
-                    // Event listener for clicking a row to manage tasks
-                    row.addEventListener('click', function() {
-                        selectedMember = member.name;
-                        document.getElementById('selectedMemberTitle').textContent = `Tasks for ${selectedMember}`;
-                        document.getElementById('memberNameDisplay').textContent = selectedMember;
-                        taskForm.style.display = 'block';
-                        memberTasksDiv.style.display = 'block';
-                        updateTaskTable(selectedMember);
-                        updateSpiderChart(selectedMember);
-                    });
-                });
-            }
-
-            // Delete a team member
-            function deleteMember(index) {
-                const memberName = teamMembers[index].name;
-                teamMembers.splice(index, 1);
-                delete memberTasks[memberName];
-
-                updateMemberTable();
-                updateCharts();
-
-                taskForm.style.display = 'none';
-                memberTasksDiv.style.display = 'none';
-            }
-
-            // Update the tasks table for a selected member
-            function updateTaskTable(memberName) {
-                const tbody = document.querySelector('#taskTable tbody');
-                tbody.innerHTML = '';
-
-                memberTasks[memberName].forEach(function(task) {
-                    const row = tbody.insertRow();
-                    const nameCell = row.insertCell(0);
-                    const importanceCell = row.insertCell(1);
-                    const timeQualityCell = row.insertCell(2);
-                    const skillsCell = row.insertCell(3);
-
-                    nameCell.textContent = task.name;
-                    importanceCell.textContent = task.importance;
-                    timeQualityCell.textContent = task.timeQuality;
-                    skillsCell.textContent = task.skills.join(', ');
-
-                    if (task.timeQuality === 'poor') {
-                        row.classList.add('highlight');
-                    }
-                });
-            }
-
-            // Handle task submission for a selected member
-            memberTaskForm.addEventListener('submit', function(e) {
+            taskForm.addEventListener('submit', function(e) {
                 e.preventDefault();
 
                 const taskName = document.getElementById('taskName').value;
-                const taskImportance = document.getElementById('taskImportance').value;
-                const taskTimeQuality = document.getElementById('taskTimeQuality').value;
-                const taskSkills = document.getElementById('taskSkills').value.split(',');
+                const importance = document.getElementById('taskImportance').value;
+                const quality = document.getElementById('taskQuality').value;
+                const skills = document.getElementById('taskSkills').value;
 
-                if (selectedMember) {
-                    memberTasks[selectedMember].push({
-                        name: taskName,
-                        importance: taskImportance,
-                        timeQuality: taskTimeQuality,
-                        skills: taskSkills
-                    });
-
-                    updateTaskTable(selectedMember);
-                    updateSpiderChart(selectedMember);
-
-                    document.getElementById('taskName').value = '';
-                    document.getElementById('taskImportance').value = 'high';
-                    document.getElementById('taskTimeQuality').value = 'good';
-                    document.getElementById('taskSkills').value = '';
-                }
+                const task = { taskName, importance, quality, skills };
+                tasks[currentMember].push(task);
+                updateTaskTable();
+                resetTaskForm();
             });
 
-            // Update the team composition chart
-            function updateCharts() {
-                const roles = {};
-                teamMembers.forEach(function(member) {
-                    roles[member.role] = (roles[member.role] || 0) + 1;
+            function updateMemberTable() {
+                const memberTable = document.getElementById('memberTable').getElementsByTagName('tbody')[0];
+                memberTable.innerHTML = '';
+
+                teamMembers.forEach((member, index) => {
+                    const row = memberTable.insertRow();
+                    row.insertCell(0).textContent = member.name;
+                    row.insertCell(1).textContent = member.role;
+                    row.insertCell(2).textContent = member.talent;
+                    const deleteCell = row.insertCell(3);
+                    deleteCell.innerHTML = '<span class="btn-delete" data-index="' + index + '">Delete</span>';
+
+                    deleteCell.querySelector('.btn-delete').addEventListener('click', function() {
+                        teamMembers.splice(index, 1);
+                        delete tasks[member.name];
+                        updateMemberTable();
+                        resetTaskAnalysis();
+                    });
+
+                    row.addEventListener('click', function() {
+                        currentMember = member.name;
+                        taskAnalysisTitle.textContent = `Task Analysis for ${member.name}`;
+                        tasksTitle.textContent = `Tasks for ${member.name}`;
+                        updateTaskTable();
+                        taskAnalysis.style.display = 'block';
+                    });
                 });
 
-                const ctx = document.getElementById('teamChart');
-                if (ctx) {
-                    const context = ctx.getContext('2d');
-
-                    if (teamChart) {
-                        teamChart.destroy();
-                    }
-
-                    teamChart = new Chart(context, {
-                        type: 'pie',
-                        data: {
-                            labels: Object.keys(roles),
-                            datasets: [{
-                                data: Object.values(roles),
-                                backgroundColor: ['#4682b4', '#87CEEB', '#20B2AA', '#00CED1', '#48D1CC']
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                title: {
-                                    display: true,
-                                    text: 'Team Composition by Role'
-                                }
-                            }
-                        }
-                    });
-                }
+                updateChart();
             }
 
-            // Update the spider chart for a selected member
-            function updateSpiderChart(memberName) {
-                const taskData = memberTasks[memberName];
+            function updateTaskTable() {
+                taskTable.innerHTML = '';
 
-                const labels = taskData.map(task => task.name);
-                const importanceData = taskData.map(task => task.importance === 'high' ? 3 : task.importance === 'medium' ? 2 : 1);
-                const timeQualityData = taskData.map(task => task.timeQuality === 'excellent' ? 3 : task.timeQuality === 'good' ? 2 : task.timeQuality === 'average' ? 1 : 0);
-                const skillsCountData = taskData.map(task => task.skills.length);
+                tasks[currentMember].forEach((task, index) => {
+                    const row = taskTable.insertRow();
+                    row.insertCell(0).textContent = task.taskName;
+                    row.insertCell(1).textContent = task.importance;
+                    row.insertCell(2).textContent = task.quality;
+                    row.insertCell(3).textContent = task.skills;
+                    const deleteCell = row.insertCell(4);
+                    deleteCell.innerHTML = '<span class="btn-delete" data-index="' + index + '">Delete</span>';
 
-                const ctx = document.getElementById('spiderChart');
-                if (ctx) {
-                    const context = ctx.getContext('2d');
+                    deleteCell.querySelector('.btn-delete').addEventListener('click', function() {
+                        tasks[currentMember].splice(index, 1);
+                        updateTaskTable();
+                    });
+                });
 
-                    if (spiderChart) {
-                        spiderChart.destroy();
-                    }
+                updateChart();
+            }
 
-                    spiderChart = new Chart(context, {
-                        type: 'radar',
-                        data: {
-                            labels: labels,
-                            datasets: [
-                                {
-                                    label: 'Task Importance',
-                                    data: importanceData,
-                                    fill: true,
-                                    backgroundColor: 'rgba(70,130,180,0.2)',
-                                    borderColor: 'rgba(70,130,180,1)',
-                                    pointBackgroundColor: 'rgba(70,130,180,1)',
-                                    pointBorderColor: '#fff',
-                                    pointHoverBackgroundColor: '#fff',
-                                    pointHoverBorderColor: 'rgba(70,130,180,1)'
-                                },
-                                {
-                                    label: 'Time Quality',
-                                    data: timeQualityData,
-                                    fill: true,
-                                    backgroundColor: 'rgba(135,206,235,0.2)',
-                                    borderColor: 'rgba(135,206,235,1)',
-                                    pointBackgroundColor: 'rgba(135,206,235,1)',
-                                    pointBorderColor: '#fff',
-                                    pointHoverBackgroundColor: '#fff',
-                                    pointHoverBorderColor: 'rgba(135,206,235,1)'
-                                },
-                                {
-                                    label: 'Skills Count',
-                                    data: skillsCountData,
-                                    fill: true,
-                                    backgroundColor: 'rgba(32,178,170,0.2)',
-                                    borderColor: 'rgba(32,178,170,1)',
-                                    pointBackgroundColor: 'rgba(32,178,170,1)',
-                                    pointBorderColor: '#fff',
-                                    pointHoverBackgroundColor: '#fff',
-                                    pointHoverBorderColor: 'rgba(32,178,170,1)'
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                title: {
-                                    display: true,
-                                    text: `Performance Analysis for ${memberName}`
-                                }
+            function updateChart() {
+                const ctx = document.getElementById('teamChart').getContext('2d');
+                const memberNames = teamMembers.map(member => member.name);
+                const talentRatings = teamMembers.map(member => member.talent);
+                const taskImportance = teamMembers.map(member => {
+                    const memberTasks = tasks[member.name];
+                    const totalImportance = memberTasks.reduce((sum, task) => {
+                        if (task.importance === 'High') return sum + 3;
+                        if (task.importance === 'Medium') return sum + 2;
+                        return sum + 1;
+                    }, 0);
+                    return totalImportance / (memberTasks.length || 1);
+                });
+
+                new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: memberNames,
+                        datasets: [
+                            {
+                                label: 'Talent Rating',
+                                data: talentRatings,
+                                fill: true,
+                                backgroundColor: 'rgba(0,123,255,0.2)',
+                                borderColor: 'rgba(0,123,255,1)',
+                                pointBackgroundColor: 'rgba(0,123,255,1)',
                             },
-                            scales: {
-                                r: {
-                                    angleLines: {
-                                        display: false
-                                    },
-                                    suggestedMin: 0,
-                                    suggestedMax: 3
-                                }
-                            }
-                        }
-                    });
-                }
+                            {
+                                label: 'Average Task Importance',
+                                data: taskImportance,
+                                fill: true,
+                                backgroundColor: 'rgba(40,167,69,0.2)',
+                                borderColor: 'rgba(40,167,69,1)',
+                                pointBackgroundColor: 'rgba(40,167,69,1)',
+                            },
+                        ],
+                    },
+                    options: {
+                        scales: {
+                            r: {
+                                angleLines: { display: true },
+                                suggestedMin: 0,
+                                suggestedMax: 10,
+                            },
+                        },
+                    },
+                });
             }
 
-            // Go back to the member list
-            function goBackToMemberList() {
-                taskForm.style.display = 'none';
-                memberTasksDiv.style.display = 'none';
+            function resetMemberForm() {
+                document.getElementById('memberName').value = '';
+                document.getElementById('memberRole').value = '';
+                document.getElementById('memberTalent').value = '';
+            }
+
+            function resetTaskForm() {
+                document.getElementById('taskName').value = '';
+                document.getElementById('taskImportance').value = 'High';
+                document.getElementById('taskQuality').value = 'Good';
+                document.getElementById('taskSkills').value = '';
+            }
+
+            function resetTaskAnalysis() {
+                currentMember = null;
+                taskAnalysis.style.display = 'none';
+                taskTable.innerHTML = '';
             }
         });
     </script>
