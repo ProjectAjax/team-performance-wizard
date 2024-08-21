@@ -124,9 +124,125 @@
         </table>
     </div>
 
+    <!-- Include Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+
+    <!-- Your custom JavaScript code -->
     <script>
-        // Your JavaScript remains the same
+        document.addEventListener('DOMContentLoaded', function() {
+            let teamChart;
+            let teamMembers = [];
+
+            const teamForm = document.getElementById('teamForm');
+            const memberForm = document.getElementById('memberForm');
+            const dashboard = document.getElementById('dashboard');
+
+            if (teamForm) {
+                teamForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    var teamName = document.getElementById('teamName').value;
+                    var teamSize = parseInt(document.getElementById('teamSize').value);
+                    var teamLead = document.getElementById('teamLead').value;
+                    
+                    // Update dashboard
+                    const teamInfo = document.getElementById('teamInfo');
+                    if (teamInfo) {
+                        teamInfo.innerHTML = `
+                            <p><strong>Team Name:</strong> ${teamName}</p>
+                            <p><strong>Team Size:</strong> ${teamSize}</p>
+                            <p><strong>Team Lead:</strong> ${teamLead}</p>
+                        `;
+                    }
+                    
+                    // Show dashboard
+                    if (dashboard) {
+                        dashboard.style.display = 'block';
+                    }
+                    
+                    updateChart();
+                });
+            } else {
+                console.error('Team form not found');
+            }
+
+            if (memberForm) {
+                memberForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    var name = document.getElementById('memberName').value;
+                    var role = document.getElementById('memberRole').value;
+                    
+                    teamMembers.push({name: name, role: role});
+                    
+                    updateMemberTable();
+                    updateChart();
+                    
+                    // Clear the form
+                    document.getElementById('memberName').value = '';
+                    document.getElementById('memberRole').value = '';
+                });
+            } else {
+                console.error('Member form not found');
+            }
+
+            function updateMemberTable() {
+                var tbody = document.querySelector('#memberTable tbody');
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    
+                    teamMembers.forEach(function(member) {
+                        var row = tbody.insertRow();
+                        var nameCell = row.insertCell(0);
+                        var roleCell = row.insertCell(1);
+                        
+                        nameCell.textContent = member.name;
+                        roleCell.textContent = member.role;
+                    });
+                } else {
+                    console.error('Member table not found');
+                }
+            }
+
+            function updateChart() {
+                var roles = {};
+                teamMembers.forEach(function(member) {
+                    roles[member.role] = (roles[member.role] || 0) + 1;
+                });
+                
+                var ctx = document.getElementById('teamChart');
+                if (ctx) {
+                    ctx = ctx.getContext('2d');
+                    
+                    if (teamChart) {
+                        teamChart.destroy();
+                    }
+                    
+                    teamChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: Object.keys(roles),
+                            datasets: [{
+                                data: Object.values(roles),
+                                backgroundColor: ['#4682b4', '#87CEEB', '#20B2AA', '#00CED1', '#48D1CC']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Team Composition by Role'
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    console.error('Chart canvas not found');
+                }
+            }
+        });
     </script>
 </body>
 </html>
