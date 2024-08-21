@@ -73,6 +73,9 @@
             background-color: #4682b4;
             color: white;
         }
+        .highlight {
+            background-color: #ffdddd;
+        }
     </style>
 </head>
 <body>
@@ -125,6 +128,20 @@
             <button type="submit">Add Task</button>
         </form>
 
+        <!-- Task Analysis Table -->
+        <h3>Task List</h3>
+        <table id="taskTable">
+            <thead>
+                <tr>
+                    <th>Task Name</th>
+                    <th>Importance</th>
+                    <th>Bottleneck</th>
+                    <th>Skills Required</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
         <h3>Team Members</h3>
         <table id="memberTable">
             <thead>
@@ -149,7 +166,6 @@
 
             const teamForm = document.getElementById('teamForm');
             const taskForm = document.getElementById('taskForm');
-            const memberForm = document.getElementById('memberForm');
             const dashboard = document.getElementById('dashboard');
 
             teamForm.addEventListener('submit', function(e) {
@@ -184,31 +200,44 @@
                     skills: taskSkills
                 });
 
-                console.log("Tasks:", tasks);  // Debugging: Print tasks to console
+                updateTaskTable();
+                analyzeTasks();
 
                 // Clear the form
                 document.getElementById('taskName').value = '';
                 document.getElementById('taskImportance').value = 'high';
                 document.getElementById('taskBottleneck').value = 'no';
                 document.getElementById('taskSkills').value = '';
-
-                // You can expand this to dynamically update the dashboard with the task data
             });
 
-            memberForm.addEventListener('submit', function(e) {
-                e.preventDefault();
+            function updateTaskTable() {
+                const tbody = document.querySelector('#taskTable tbody');
+                tbody.innerHTML = '';
 
-                const name = document.getElementById('memberName').value;
-                const role = document.getElementById('memberRole').value;
+                tasks.forEach(function(task) {
+                    const row = tbody.insertRow();
+                    const nameCell = row.insertCell(0);
+                    const importanceCell = row.insertCell(1);
+                    const bottleneckCell = row.insertCell(2);
+                    const skillsCell = row.insertCell(3);
 
-                teamMembers.push({ name: name, role: role });
+                    nameCell.textContent = task.name;
+                    importanceCell.textContent = task.importance;
+                    bottleneckCell.textContent = task.bottleneck;
+                    skillsCell.textContent = task.skills.join(', ');
 
-                updateMemberTable();
-                updateChart();
+                    if (task.bottleneck === 'yes') {
+                        row.classList.add('highlight');
+                    }
+                });
+            }
 
-                document.getElementById('memberName').value = '';
-                document.getElementById('memberRole').value = '';
-            });
+            function analyzeTasks() {
+                // Example of simple analysis - log tasks marked as bottlenecks
+                const bottleneckTasks = tasks.filter(task => task.bottleneck === 'yes');
+                console.log("Bottleneck Tasks:", bottleneckTasks);
+                // Further analysis can be added here
+            }
 
             function updateMemberTable() {
                 const tbody = document.querySelector('#memberTable tbody');
