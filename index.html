@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Performance Dashboard</title>
+    <title>SkillSync360 Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -30,27 +30,145 @@
         }
         .table-hover tbody tr:hover {
             background-color: #e6f2ff;
+            cursor: pointer;
+        }
+        #spiderGraph {
+            max-width: 500px;
+            margin: auto;
         }
     </style>
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="text-center">Welcome to Training Culture</h1>
+    <h1 class="text-center">Welcome to SkillSync360</h1>
     <p class="text-center">Your journey to optimal team performance starts here!</p>
 
-    <!-- Rest of the HTML remains the same -->
-
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <canvas id="talentChart"></canvas>
-        </div>
-        <div class="col-md-6">
-            <canvas id="roleChart"></canvas>
-        </div>
+    <div id="teamFormSection">
+        <h2>Team Dashboard</h2>
+        <form id="teamForm">
+            <div class="form-group">
+                <label for="teamName">Team Name:</label>
+                <input type="text" id="teamName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="teamSize">Team Size:</label>
+                <input type="number" id="teamSize" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="teamLead">Team Lead:</label>
+                <input type="text" id="teamLead" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Team Info</button>
+        </form>
     </div>
 
-    <!-- Rest of the HTML remains the same -->
+    <div id="teamDashboardSection" style="display:none;">
+        <h2>Team Dashboard</h2>
+        <p><strong>Team Name:</strong> <span id="displayTeamName"></span></p>
+        <p><strong>Team Size:</strong> <span id="displayTeamSize"></span></p>
+        <p><strong>Team Lead:</strong> <span id="displayTeamLead"></span></p>
 
+        <h3>Add Team Member</h3>
+        <form id="memberForm">
+            <div class="form-group">
+                <label for="memberName">Name:</label>
+                <input type="text" id="memberName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="memberRole">Role:</label>
+                <input type="text" id="memberRole" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="memberTalent">Talent Rating:</label>
+                <select id="memberTalent" class="form-control">
+                    <option value="Critical">Critical</option>
+                    <option value="High">High</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="Low">Low</option>
+                    <option value="Emerging">Emerging</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="memberPerformance">Performance Rating:</label>
+                <input type="number" id="memberPerformance" class="form-control" min="1" max="10">
+            </div>
+            <button type="submit" class="btn btn-primary">Add Member</button>
+        </form>
+
+        <h3>Team Members</h3>
+        <table class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Talent</th>
+                <th>Performance</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="membersTable"></tbody>
+        </table>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <canvas id="talentChart"></canvas>
+            </div>
+            <div class="col-md-6">
+                <canvas id="roleChart"></canvas>
+            </div>
+        </div>
+
+        <h3>Task Analysis for <span id="taskMemberName"></span></h3>
+        <form id="taskForm">
+            <div class="form-group">
+                <label for="taskName">Task Name:</label>
+                <input type="text" id="taskName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="taskImportance">Task Importance:</label>
+                <select id="taskImportance" class="form-control">
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="taskTimeQuality">Quality of Time Spent on Task:</label>
+                <select id="taskTimeQuality" class="form-control">
+                    <option value="Excellent">Excellent</option>
+                    <option value="Good">Good</option>
+                    <option value="Fair">Fair</option>
+                    <option value="Poor">Poor</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="taskSkills">Skills Required:</label>
+                <input type="text" id="taskSkills" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Add Task</button>
+        </form>
+
+        <h3>Tasks for <span id="taskMemberNameDisplay"></span></h3>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Task Name</th>
+                <th>Importance</th>
+                <th>Quality of Time</th>
+                <th>Skills Required</th>
+            </tr>
+            </thead>
+            <tbody id="tasksTable"></tbody>
+        </table>
+
+        <h3>Team Performance Spider Graph</h3>
+        <div id="spiderGraph">
+            <canvas id="performanceSpiderChart"></canvas>
+        </div>
+
+        <h3>Team Performance Report</h3>
+        <div id="performanceReport"></div>
+    </div>
 </div>
 
 <script>
@@ -58,11 +176,81 @@
     let members = [];
     let memberTasks = {};
 
-    // Rest of the JavaScript remains the same until updateChart function
+    document.getElementById('teamForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        team.name = document.getElementById('teamName').value;
+        team.size = document.getElementById('teamSize').value;
+        team.lead = document.getElementById('teamLead').value;
 
-    function updateChart() {
+        document.getElementById('displayTeamName').textContent = team.name;
+        document.getElementById('displayTeamSize').textContent = team.size;
+        document.getElementById('displayTeamLead').textContent = team.lead;
+
+        document.getElementById('teamFormSection').style.display = 'none';
+        document.getElementById('teamDashboardSection').style.display = 'block';
+    });
+
+    document.getElementById('memberForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const name = document.getElementById('memberName').value;
+        const role = document.getElementById('memberRole').value;
+        const talent = document.getElementById('memberTalent').value;
+        const performance = document.getElementById('memberPerformance').value;
+
+        members.push({ name, role, talent, performance });
+        memberTasks[name] = [];
+        updateMembersTable();
+        updateCharts();
+        document.getElementById('memberForm').reset();
+    });
+
+    function updateMembersTable() {
+        const table = document.getElementById('membersTable');
+        table.innerHTML = '';
+        members.forEach(member => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${member.name}</td>
+                <td>${member.role}</td>
+                <td>${member.talent}</td>
+                <td>${member.performance}</td>
+                <td>
+                    <button class="btn btn-info btn-sm mr-2" onclick="updateMember('${member.name}')">Update</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteMember('${member.name}')">Delete</button>
+                </td>
+            `;
+            row.addEventListener('click', () => {
+                document.getElementById('taskMemberName').textContent = member.name;
+                document.getElementById('taskMemberNameDisplay').textContent = member.name;
+                updateTasksTable(member.name);
+            });
+            table.appendChild(row);
+        });
+    }
+
+    function deleteMember(name) {
+        members = members.filter(member => member.name !== name);
+        delete memberTasks[name];
+        updateMembersTable();
+        updateCharts();
+    }
+
+    function updateMember(name) {
+        const member = members.find(m => m.name === name);
+        if (member) {
+            member.role = prompt("Enter new role:", member.role) || member.role;
+            member.talent = prompt("Enter new talent (Critical/High/Moderate/Low/Emerging):", member.talent) || member.talent;
+            member.performance = prompt("Enter new performance rating (1-10):", member.performance) || member.performance;
+            updateMembersTable();
+            updateCharts();
+        }
+    }
+
+    function updateCharts() {
         updateTalentChart();
         updateRoleChart();
+        updateSpiderChart();
+        generatePerformanceReport();
     }
 
     function updateTalentChart() {
@@ -168,42 +356,20 @@
         });
     }
 
-    // Add this function to allow updating existing members
-    function updateMember(name) {
-        const member = members.find(m => m.name === name);
-        if (member) {
-            member.role = prompt("Enter new role:", member.role) || member.role;
-            member.talent = prompt("Enter new talent (Critical/High/Moderate/Low/Emerging):", member.talent) || member.talent;
-            updateMembersTable();
-            updateChart();
-        }
-    }
-
-    // Modify the updateMembersTable function to include an update button
-    function updateMembersTable() {
-        const table = document.getElementById('membersTable');
-        table.innerHTML = '';
-        members.forEach(member => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${member.name}</td>
-                <td>${member.role}</td>
-                <td>${member.talent}</td>
-                <td>
-                    <button class="btn btn-info btn-sm mr-2" onclick="updateMember('${member.name}')">Update</button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteMember('${member.name}')">Delete</button>
-                </td>
-            `;
-            row.addEventListener('click', () => {
-                document.getElementById('taskMemberName').textContent = member.name;
-                document.getElementById('taskMemberNameDisplay').textContent = member.name;
-                updateTasksTable(member.name);
-            });
-            table.appendChild(row);
-        });
-    }
-
-    // Rest of the JavaScript remains the same
-</script>
-</body>
-</html>
+    function updateSpiderChart() {
+        const ctx = document.getElementById('performanceSpiderChart').getContext('2d');
+        const data = {
+            labels: ['Talent', 'Performance', 'Task Quality', 'Task Importance', 'Skill Diversity'],
+            datasets: members.map(member => ({
+                label: member.name,
+                data: [
+                    talentToNumber(member.talent),
+                    parseInt(member.performance),
+                    averageTaskQuality(member.name),
+                    averageTaskImportance(member.name),
+                    calculateSkillDiversity(member.name)
+                ],
+                fill: true,
+                backgroundColor: `rgba(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255},0.2)`,
+                borderColor: `rgba(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255},1)`,
+                
