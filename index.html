@@ -143,7 +143,7 @@
             const dashboard = document.getElementById('dashboard');
 
             teamForm.addEventListener('submit', function(e) {
-                e.preventDefault();
+                e.preventDefault();  // Prevent the form from submitting and refreshing the page
 
                 var teamName = document.getElementById('teamName').value;
                 var teamSize = parseInt(document.getElementById('teamSize').value);
@@ -166,7 +166,7 @@
             });
 
             memberForm.addEventListener('submit', function(e) {
-                e.preventDefault();
+                e.preventDefault();  // Prevent the form from submitting and refreshing the page
 
                 var name = document.getElementById('memberName').value;
                 var role = document.getElementById('memberRole').value;
