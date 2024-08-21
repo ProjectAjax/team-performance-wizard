@@ -75,7 +75,7 @@
 
         <canvas id="talentChart"></canvas>
 
-        <h3>Task Analysis</h3>
+        <h3>Task Analysis for <span id="taskMemberName"></span></h3>
         <form id="taskForm">
             <div class="form-group">
                 <label for="taskName">Task Name:</label>
@@ -105,7 +105,7 @@
             <button type="submit" class="btn btn-primary">Add Task</button>
         </form>
 
-        <h3>Tasks for <span id="taskMemberName"></span></h3>
+        <h3>Tasks for <span id="taskMemberNameDisplay"></span></h3>
         <table class="table table-bordered">
             <thead>
             <tr>
@@ -165,6 +165,7 @@
             `;
             row.addEventListener('click', () => {
                 document.getElementById('taskMemberName').textContent = member.name;
+                document.getElementById('taskMemberNameDisplay').textContent = member.name;
                 updateTasksTable(member.name);
             });
             table.appendChild(row);
@@ -200,19 +201,12 @@
                     borderWidth: 1
                 },
                 {
-                    label: 'Average Task Importance',
+                    label: 'Time Spent on Highest Quality Tasks',
                     data: members.map(member => {
                         const tasks = memberTasks[member.name];
                         if (tasks.length === 0) return 0;
-                        const totalImportance = tasks.reduce((acc, task) => {
-                            switch (task.importance) {
-                                case 'High': return acc + 10;
-                                case 'Medium': return acc + 5;
-                                case 'Low': return acc + 2;
-                                default: return acc;
-                            }
-                        }, 0);
-                        return totalImportance / tasks.length;
+                        const highQualityTasks = tasks.filter(task => task.timeQuality === 'Excellent');
+                        return highQualityTasks.length / tasks.length * 10;
                     }),
                     backgroundColor: 'rgba(75, 192, 192, 0.5)',
                     borderColor: 'rgba(75, 192, 192, 1)',
