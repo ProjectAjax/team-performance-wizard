@@ -31,7 +31,7 @@
             display: block;
             margin-top: 10px;
         }
-        input[type="text"], input[type="number"] {
+        input[type="text"], input[type="number"], select {
             width: 100%;
             padding: 8px;
             margin-top: 5px;
@@ -80,7 +80,8 @@
         <h1>Welcome to Training Culture</h1>
         <p>Your journey to optimal team performance starts here!</p>
         
-        <form id="teamForm" onsubmit="return false;">
+        <!-- Team Information Form -->
+        <form id="teamForm">
             <label for="teamName">Team Name:</label>
             <input type="text" id="teamName" name="teamName" required>
             
@@ -94,24 +95,36 @@
         </form>
     </div>
 
+    <!-- Dashboard Section -->
     <div id="dashboard" class="container">
         <h2>Team Dashboard</h2>
         <div id="teamInfo"></div>
-        <div class="chart-container">
-            <canvas id="teamChart"></canvas>
-        </div>
         
-        <h3>Add Team Member</h3>
-        <form id="memberForm" onsubmit="return false;">
-            <label for="memberName">Name:</label>
-            <input type="text" id="memberName" required>
+        <!-- Task Analysis Form -->
+        <h3>Task Analysis</h3>
+        <form id="taskForm">
+            <label for="taskName">Task Name:</label>
+            <input type="text" id="taskName" required>
             
-            <label for="memberRole">Role:</label>
-            <input type="text" id="memberRole" required>
+            <label for="taskImportance">Task Importance:</label>
+            <select id="taskImportance" required>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+            </select>
             
-            <button type="submit">Add Member</button>
+            <label for="taskBottleneck">Is This Task a Bottleneck?</label>
+            <select id="taskBottleneck" required>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+            
+            <label for="taskSkills">Skills Required:</label>
+            <input type="text" id="taskSkills" placeholder="List required skills, separated by commas" required>
+            
+            <button type="submit">Add Task</button>
         </form>
-        
+
         <h3>Team Members</h3>
         <table id="memberTable">
             <thead>
@@ -124,52 +137,69 @@
         </table>
     </div>
 
-    <!-- Include Chart.js library before your custom script -->
+    <!-- Include Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
 
-    <!-- Your custom JavaScript code -->
+    <!-- Custom JavaScript Code -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            if (typeof Chart !== "function") {
-                console.error("Chart.js failed to load.");
-                return;
-            }
-            
             let teamChart;
             let teamMembers = [];
+            let tasks = [];
 
             const teamForm = document.getElementById('teamForm');
+            const taskForm = document.getElementById('taskForm');
             const memberForm = document.getElementById('memberForm');
             const dashboard = document.getElementById('dashboard');
 
             teamForm.addEventListener('submit', function(e) {
-                e.preventDefault();  // Prevent the form from submitting and refreshing the page
+                e.preventDefault();
 
-                var teamName = document.getElementById('teamName').value;
-                var teamSize = parseInt(document.getElementById('teamSize').value);
-                var teamLead = document.getElementById('teamLead').value;
+                const teamName = document.getElementById('teamName').value;
+                const teamSize = parseInt(document.getElementById('teamSize').value);
+                const teamLead = document.getElementById('teamLead').value;
 
                 const teamInfo = document.getElementById('teamInfo');
-                if (teamInfo) {
-                    teamInfo.innerHTML = `
-                        <p><strong>Team Name:</strong> ${teamName}</p>
-                        <p><strong>Team Size:</strong> ${teamSize}</p>
-                        <p><strong>Team Lead:</strong> ${teamLead}</p>
-                    `;
-                }
+                teamInfo.innerHTML = `
+                    <p><strong>Team Name:</strong> ${teamName}</p>
+                    <p><strong>Team Size:</strong> ${teamSize}</p>
+                    <p><strong>Team Lead:</strong> ${teamLead}</p>
+                `;
+                
+                dashboard.style.display = 'block';
+            });
 
-                if (dashboard) {
-                    dashboard.style.display = 'block';
-                }
+            taskForm.addEventListener('submit', function(e) {
+                e.preventDefault();
 
-                updateChart();
+                const taskName = document.getElementById('taskName').value;
+                const taskImportance = document.getElementById('taskImportance').value;
+                const taskBottleneck = document.getElementById('taskBottleneck').value;
+                const taskSkills = document.getElementById('taskSkills').value.split(',');
+
+                tasks.push({
+                    name: taskName,
+                    importance: taskImportance,
+                    bottleneck: taskBottleneck,
+                    skills: taskSkills
+                });
+
+                console.log("Tasks:", tasks);  // Debugging: Print tasks to console
+
+                // Clear the form
+                document.getElementById('taskName').value = '';
+                document.getElementById('taskImportance').value = 'high';
+                document.getElementById('taskBottleneck').value = 'no';
+                document.getElementById('taskSkills').value = '';
+
+                // You can expand this to dynamically update the dashboard with the task data
             });
 
             memberForm.addEventListener('submit', function(e) {
-                e.preventDefault();  // Prevent the form from submitting and refreshing the page
+                e.preventDefault();
 
-                var name = document.getElementById('memberName').value;
-                var role = document.getElementById('memberRole').value;
+                const name = document.getElementById('memberName').value;
+                const role = document.getElementById('memberRole').value;
 
                 teamMembers.push({ name: name, role: role });
 
@@ -181,30 +211,26 @@
             });
 
             function updateMemberTable() {
-                var tbody = document.querySelector('#memberTable tbody');
-                if (tbody) {
-                    tbody.innerHTML = '';
+                const tbody = document.querySelector('#memberTable tbody');
+                tbody.innerHTML = '';
 
-                    teamMembers.forEach(function(member) {
-                        var row = tbody.insertRow();
-                        var nameCell = row.insertCell(0);
-                        var roleCell = row.insertCell(1);
+                teamMembers.forEach(function(member) {
+                    const row = tbody.insertRow();
+                    const nameCell = row.insertCell(0);
+                    const roleCell = row.insertCell(1);
 
-                        nameCell.textContent = member.name;
-                        roleCell.textContent = member.role;
-                    });
-                } else {
-                    console.error('Member table not found');
-                }
+                    nameCell.textContent = member.name;
+                    roleCell.textContent = member.role;
+                });
             }
 
             function updateChart() {
-                var roles = {};
+                const roles = {};
                 teamMembers.forEach(function(member) {
                     roles[member.role] = (roles[member.role] || 0) + 1;
                 });
 
-                var ctx = document.getElementById('teamChart');
+                const ctx = document.getElementById('teamChart');
                 if (ctx) {
                     ctx = ctx.getContext('2d');
 
@@ -232,8 +258,6 @@
                             }
                         }
                     });
-                } else {
-                    console.error('Chart canvas not found');
                 }
             }
         });
