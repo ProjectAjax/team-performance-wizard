@@ -176,6 +176,11 @@
                 <tbody></tbody>
             </table>
         </div>
+
+        <!-- Chart Container -->
+        <div class="chart-container">
+            <canvas id="teamChart"></canvas>
+        </div>
     </div>
 
     <!-- Include Chart.js library -->
@@ -214,22 +219,21 @@
             });
 
             // Add new team member
-            if (memberForm) {
-                memberForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
+            memberForm.addEventListener('submit', function(e) {
+                e.preventDefault();
 
-                    const name = document.getElementById('memberName').value;
-                    const role = document.getElementById('memberRole').value;
+                const name = document.getElementById('memberName').value;
+                const role = document.getElementById('memberRole').value;
 
-                    teamMembers.push({ name: name, role: role });
-                    memberTasks[name] = [];
+                teamMembers.push({ name: name, role: role });
+                memberTasks[name] = [];
 
-                    updateMemberTable();
+                updateMemberTable();
+                updateChart();
 
-                    document.getElementById('memberName').value = '';
-                    document.getElementById('memberRole').value = '';
-                });
-            }
+                document.getElementById('memberName').value = '';
+                document.getElementById('memberRole').value = '';
+            });
 
             // Update the team members table
             function updateMemberTable() {
