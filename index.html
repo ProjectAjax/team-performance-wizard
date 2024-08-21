@@ -109,6 +109,18 @@
         <h2>Team Dashboard</h2>
         <div id="teamInfo"></div>
 
+        <!-- Add Team Member Form -->
+        <h3>Add Team Member</h3>
+        <form id="memberForm">
+            <label for="memberName">Name:</label>
+            <input type="text" id="memberName" required>
+            
+            <label for="memberRole">Role:</label>
+            <input type="text" id="memberRole" required>
+            
+            <button type="submit">Add Member</button>
+        </form>
+
         <h3>Team Members</h3>
         <table id="memberTable">
             <thead>
@@ -134,10 +146,12 @@
                     <option value="low">Low</option>
                 </select>
                 
-                <label for="taskBottleneck">Is This Task a Bottleneck?</label>
-                <select id="taskBottleneck" required>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
+                <label for="taskTimeQuality">Quality of Time Spent on Task:</label>
+                <select id="taskTimeQuality" required>
+                    <option value="excellent">Excellent</option>
+                    <option value="good">Good</option>
+                    <option value="average">Average</option>
+                    <option value="poor">Poor</option>
                 </select>
                 
                 <label for="taskSkills">Skills Required:</label>
@@ -155,7 +169,7 @@
                     <tr>
                         <th>Task Name</th>
                         <th>Importance</th>
-                        <th>Bottleneck</th>
+                        <th>Quality of Time</th>
                         <th>Skills Required</th>
                     </tr>
                 </thead>
@@ -255,15 +269,15 @@
                     const row = tbody.insertRow();
                     const nameCell = row.insertCell(0);
                     const importanceCell = row.insertCell(1);
-                    const bottleneckCell = row.insertCell(2);
+                    const timeQualityCell = row.insertCell(2);
                     const skillsCell = row.insertCell(3);
 
                     nameCell.textContent = task.name;
                     importanceCell.textContent = task.importance;
-                    bottleneckCell.textContent = task.bottleneck;
+                    timeQualityCell.textContent = task.timeQuality;
                     skillsCell.textContent = task.skills.join(', ');
 
-                    if (task.bottleneck === 'yes') {
+                    if (task.timeQuality === 'poor') {
                         row.classList.add('highlight');
                     }
                 });
@@ -275,14 +289,14 @@
 
                 const taskName = document.getElementById('taskName').value;
                 const taskImportance = document.getElementById('taskImportance').value;
-                const taskBottleneck = document.getElementById('taskBottleneck').value;
+                const taskTimeQuality = document.getElementById('taskTimeQuality').value;
                 const taskSkills = document.getElementById('taskSkills').value.split(',');
 
                 if (selectedMember) {
                     memberTasks[selectedMember].push({
                         name: taskName,
                         importance: taskImportance,
-                        bottleneck: taskBottleneck,
+                        timeQuality: taskTimeQuality,
                         skills: taskSkills
                     });
 
@@ -291,7 +305,7 @@
                     // Clear the form
                     document.getElementById('taskName').value = '';
                     document.getElementById('taskImportance').value = 'high';
-                    document.getElementById('taskBottleneck').value = 'no';
+                    document.getElementById('taskTimeQuality').value = 'good';
                     document.getElementById('taskSkills').value = '';
                 }
             });
