@@ -257,6 +257,7 @@
     }
 
     function addMember() {
+        console.log("Add Member function triggered!");
         const memberName = document.getElementById('member-name').value;
         const memberRole = document.getElementById('member-role').value;
         const talentRating = document.getElementById('talent-rating').value;
@@ -268,8 +269,12 @@
                 tasks: []
             };
 
+            console.log("Member added:", teamMembers[memberName]);
+
             renderMembers();
             clearMemberForm();
+        } else {
+            console.log("Name or Role is missing!");
         }
     }
 
