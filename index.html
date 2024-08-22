@@ -248,11 +248,11 @@
                 <canvas id="talentChart"></canvas>
             </div>
             <div>
-                <h3>Task Importance Distribution</h3>
+                <h3>Task Distribution</h3>
                 <canvas id="taskImportanceChart"></canvas>
             </div>
             <div>
-                <h3>Skills Radar Chart</h3>
+                <h3>Skills Distribution</h3>
                 <canvas id="skillsRadarChart"></canvas>
             </div>
         </div>
@@ -434,9 +434,9 @@
                         return count;
                     }, 0);
                 }),
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                pointBackgroundColor: 'rgba(54, 162, 235, 1)'
+                backgroundColor: getRandomColor(0.2),
+                borderColor: getRandomColor(1),
+                pointBackgroundColor: getRandomColor(1)
             });
         }
 
@@ -459,6 +459,21 @@
             options: {
                 maintainAspectRatio: false,
                 responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                let sum = 0;
+                                let dataArr = tooltipItem.dataset.data;
+                                dataArr.map(data => {
+                                    sum += data;
+                                });
+                                let percentage = (tooltipItem.raw / sum * 100).toFixed(2) + '%';
+                                return tooltipItem.label + ': ' + percentage;
+                            }
+                        }
+                    }
+                }
             }
         });
 
@@ -496,6 +511,14 @@
         });
 
         alert('Report generated successfully!');
+    }
+
+    // Function to generate random color
+    function getRandomColor(alpha) {
+        const r = Math.floor(Math.random() * 255);
+        const g = Math.floor(Math.random() * 255);
+        const b = Math.floor(Math.random() * 255);
+        return `rgba(${r},${g},${b},${alpha})`;
     }
 </script>
 
