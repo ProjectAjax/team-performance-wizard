@@ -131,7 +131,6 @@
 
 <div class="container">
     <div class="centered">
-        <img src="tc LOGO UPDATE .png" alt="SkillsSync360 Logo" style="max-width: 150px;">
         <h1>Welcome to SkillsSync360</h1>
     </div>
     <form id="team-form">
@@ -244,9 +243,18 @@
 
         <h3>Generate Report</h3>
         <div class="report-container">
-            <canvas id="talentChart"></canvas>
-            <canvas id="taskImportanceChart"></canvas>
-            <canvas id="skillsRadarChart"></canvas>
+            <div>
+                <h3>Talent Distribution</h3>
+                <canvas id="talentChart"></canvas>
+            </div>
+            <div>
+                <h3>Task Importance Distribution</h3>
+                <canvas id="taskImportanceChart"></canvas>
+            </div>
+            <div>
+                <h3>Skills Radar Chart</h3>
+                <canvas id="skillsRadarChart"></canvas>
+            </div>
         </div>
 
         <button type="button" onclick="generateReport()">Generate Report</button>
