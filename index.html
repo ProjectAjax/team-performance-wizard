@@ -357,6 +357,8 @@
 
     // Report Generation Function
     function generateReport() {
+        console.log("Generate Report function triggered!");
+
         if (Object.keys(teamMembers).length === 0) {
             alert('Please add at least one team member to generate a report.');
             return;
