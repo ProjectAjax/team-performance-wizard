@@ -111,6 +111,19 @@
         #team-dashboard h3 {
             margin-top: 30px;
         }
+
+        .report-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .report-container canvas {
+            flex: 1;
+            max-width: 300px;
+            max-height: 300px;
+            margin: 0 10px;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -230,10 +243,11 @@
         </div>
 
         <h3>Generate Report</h3>
-        <!-- Placing canvases here -->
-        <canvas id="talentChart" width="400" height="200"></canvas>
-        <canvas id="taskImportanceChart" width="400" height="200"></canvas>
-        <canvas id="skillsRadarChart" width="400" height="200"></canvas>
+        <div class="report-container">
+            <canvas id="talentChart"></canvas>
+            <canvas id="taskImportanceChart"></canvas>
+            <canvas id="skillsRadarChart"></canvas>
+        </div>
 
         <button type="button" onclick="generateReport()">Generate Report</button>
     </div>
@@ -378,6 +392,11 @@
         const taskImportanceCounts = {"High": 0, "Medium": 0, "Low": 0};
         const timeQualityCounts = {"Excellent": 0, "Good": 0, "Poor": 0};
 
+        const radarData = {
+            labels: [],
+            datasets: []
+        };
+
         for (const memberName in teamMembers) {
             const member = teamMembers[memberName];
             totalTalent += talentRatingMap[member.talent];
@@ -392,7 +411,24 @@
                 task.skills.split(',').forEach(skill => {
                     skill = skill.trim();
                     skillCounts[skill] = (skillCounts[skill] || 0) + 1;
+                    if (!radarData.labels.includes(skill)) {
+                        radarData.labels.push(skill);
+                    }
                 });
+            });
+
+            // Populate radar chart data for each member
+            radarData.datasets.push({
+                label: memberName,
+                data: radarData.labels.map(skill => {
+                    return member.tasks.reduce((count, task) => {
+                        if (task.skills.includes(skill)) count++;
+                        return count;
+                    }, 0);
+                }),
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                pointBackgroundColor: 'rgba(54, 162, 235, 1)'
             });
         }
 
@@ -411,6 +447,10 @@
                     }),
                     backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
                 }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
             }
         });
 
@@ -425,6 +465,10 @@
                     data: Object.values(taskImportanceCounts),
                     backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
                 }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
             }
         });
 
@@ -432,15 +476,14 @@
         const ctxSkills = document.getElementById('skillsRadarChart').getContext('2d');
         new Chart(ctxSkills, {
             type: 'radar',
-            data: {
-                labels: Object.keys(skillCounts),
-                datasets: [{
-                    label: 'Skills Gap Analysis',
-                    data: Object.values(skillCounts),
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    pointBackgroundColor: 'rgba(54, 162, 235, 1)'
-                }]
+            data: radarData,
+            options: {
+                scale: {
+                    ticks: { beginAtZero: true },
+                    angleLines: { display: false }
+                },
+                maintainAspectRatio: false,
+                responsive: true,
             }
         });
 
