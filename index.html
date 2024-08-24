@@ -169,11 +169,11 @@
             <div>
                 <label for="talent-rating">Talent Rating:</label>
                 <select id="talent-rating">
-                    <option value="Critical">Critical</option>
-                    <option value="High">High</option>
-                    <option value="Moderate">Moderate</option>
-                    <option value="Low">Low</option>
-                    <option value="Emerging">Emerging</option>
+                    <option value="5">Critical</option>
+                    <option value="4">High</option>
+                    <option value="3">Moderate</option>
+                    <option value="2">Low</option>
+                    <option value="1">Emerging</option>
                 </select>
             </div>
         </div>
@@ -291,7 +291,7 @@
     function addMember() {
         const memberName = document.getElementById('member-name').value;
         const memberRole = document.getElementById('member-role').value;
-        const talentRating = document.getElementById('talent-rating').value;
+        const talentRating = parseInt(document.getElementById('talent-rating').value);
 
         if (memberName && memberRole) {
             teamMembers[memberName] = {
@@ -332,7 +332,7 @@
     function clearMemberForm() {
         document.getElementById('member-name').value = '';
         document.getElementById('member-role').value = '';
-        document.getElementById('talent-rating').value = 'Critical';
+        document.getElementById('talent-rating').value = '5';
     }
 
     function deleteMember(memberName) {
@@ -360,6 +360,8 @@
             });
             renderTasks();
             clearTaskForm();
+        } else {
+            alert("Please enter all task details.");
         }
     }
 
@@ -457,12 +459,22 @@
                 });
             });
 
-            // Calculate Task Efficiency and Other Metrics for Each Member
+            // ** Calculate TE, TSA, SGF, and SDP **
+
+            // Calculate Task Efficiency (TE) for each member
             const totalVTPercent = member.tasks.reduce((sum, task) => sum + task.vtPercent, 0);
             const totalNVTPercent = member.tasks.reduce((sum, task) => sum + task.nvtPercent, 0);
             const te = calculateTE(totalVTPercent, totalNVTPercent);
+
+            // Adjust Talent Score based on Task Efficiency
             const tsa = calculateTSA(talentRatingMap[member.talent], te);
-            const sgf = calculateSGF([4, 5, 5, 4], [3, 4, 2, 3]);  // Adjust these arrays based on actual required and current skills
+
+            // Define required skills and current skills
+            const requiredSkills = [4, 5, 5, 4]; // Example required skills
+            const currentSkills = [3, 4, 2, 3]; // Example current skills
+            const sgf = calculateSGF(requiredSkills, currentSkills);
+
+            // Determine Skill Development Priority (SDP)
             const sdp = calculateSDP(tsa, sgf);
 
             // Populate radar chart data for each member
@@ -481,6 +493,8 @@
         }
 
         const avgTalentRating = totalTalent / Object.keys(teamMembers).length;
+
+        // ** Generate Updated Charts **
 
         // Generate Talent Distribution Chart
         const ctxTalent = document.getElementById('talentChart').getContext('2d');
