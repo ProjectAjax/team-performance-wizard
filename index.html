@@ -223,6 +223,16 @@
                     <input type="text" id="skills-required">
                 </div>
             </div>
+            <div class="form-group row">
+                <div>
+                    <label for="valued-tasks-percent">Valued Tasks %:</label>
+                    <input type="number" id="valued-tasks-percent" min="0" max="100">
+                </div>
+                <div>
+                    <label for="non-valued-tasks-percent">Non-Valued Tasks %:</label>
+                    <input type="number" id="non-valued-tasks-percent" min="0" max="100">
+                </div>
+            </div>
             <button type="button" onclick="addTask()">Add Task</button>
 
             <h4>Tasks for <span id="task-member-name"></span></h4>
@@ -279,7 +289,6 @@
     }
 
     function addMember() {
-        console.log("Add Member function triggered!");
         const memberName = document.getElementById('member-name').value;
         const memberRole = document.getElementById('member-role').value;
         const talentRating = document.getElementById('talent-rating').value;
@@ -291,12 +300,8 @@
                 tasks: []
             };
 
-            console.log("Member added:", teamMembers[memberName]);
-
             renderMembers();
             clearMemberForm();
-        } else {
-            console.log("Name or Role is missing!");
         }
     }
 
@@ -341,13 +346,17 @@
         const taskImportance = document.getElementById('task-importance').value;
         const timeQuality = document.getElementById('time-quality').value;
         const skillsRequired = document.getElementById('skills-required').value;
+        const vtPercent = parseFloat(document.getElementById('valued-tasks-percent').value) || 0;
+        const nvtPercent = parseFloat(document.getElementById('non-valued-tasks-percent').value) || 0;
 
         if (taskName && skillsRequired) {
             teamMembers[currentMember].tasks.push({
                 name: taskName,
                 importance: taskImportance,
                 quality: timeQuality,
-                skills: skillsRequired
+                skills: skillsRequired,
+                vtPercent: vtPercent,
+                nvtPercent: nvtPercent
             });
             renderTasks();
             clearTaskForm();
@@ -375,6 +384,29 @@
         document.getElementById('task-importance').value = 'High';
         document.getElementById('time-quality').value = 'Excellent';
         document.getElementById('skills-required').value = '';
+        document.getElementById('valued-tasks-percent').value = '';
+        document.getElementById('non-valued-tasks-percent').value = '';
+    }
+
+    // Calculate Task Efficiency
+    function calculateTE(vtPercent, nvtPercent) {
+        return vtPercent / (vtPercent + nvtPercent);
+    }
+
+    // Calculate Talent Score Adjustment
+    function calculateTSA(talentScore, te) {
+        return talentScore * te;
+    }
+
+    // Calculate Skill Gap Factor
+    function calculateSGF(requiredSkills, currentSkills) {
+        const skillGap = requiredSkills.reduce((acc, req, index) => acc + Math.max(0, req - currentSkills[index]), 0);
+        return skillGap / requiredSkills.length;
+    }
+
+    // Calculate Skill Development Priority
+    function calculateSDP(tsa, sgf) {
+        return tsa * sgf;
     }
 
     // Report Generation Function
@@ -425,9 +457,17 @@
                 });
             });
 
+            // Calculate Task Efficiency and Other Metrics for Each Member
+            const totalVTPercent = member.tasks.reduce((sum, task) => sum + task.vtPercent, 0);
+            const totalNVTPercent = member.tasks.reduce((sum, task) => sum + task.nvtPercent, 0);
+            const te = calculateTE(totalVTPercent, totalNVTPercent);
+            const tsa = calculateTSA(talentRatingMap[member.talent], te);
+            const sgf = calculateSGF([4, 5, 5, 4], [3, 4, 2, 3]);  // Adjust these arrays based on actual required and current skills
+            const sdp = calculateSDP(tsa, sgf);
+
             // Populate radar chart data for each member
             radarData.datasets.push({
-                label: memberName,
+                label: `${memberName} (SDP: ${sdp.toFixed(2)})`,
                 data: radarData.labels.map(skill => {
                     return member.tasks.reduce((count, task) => {
                         if (task.skills.includes(skill)) count++;
@@ -507,10 +547,32 @@
                 },
                 maintainAspectRatio: false,
                 responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(tooltipItem) {
+                                const datasetIndex = tooltipItem.datasetIndex;
+                                const label = radarData.datasets[datasetIndex].label;
+                                return `Learning Pathway: ${suggestLearningPathway(sdp)}`;
+                            }
+                        }
+                    }
+                }
             }
         });
 
-        alert('Report generated successfully!');
+        alert('Report generated successfully with updated metrics and learning pathways!');
+    }
+
+    // Function to Suggest Learning Pathway Based on SDP
+    function suggestLearningPathway(sdp) {
+        if (sdp > 2) {
+            return "Advanced Leadership Training";
+        } else if (sdp > 1) {
+            return "Targeted Skill Improvement";
+        } else {
+            return "Maintain Current Performance or Lateral Development";
+        }
     }
 
     // Function to generate random color
