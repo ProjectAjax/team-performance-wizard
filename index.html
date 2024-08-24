@@ -3,542 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillsSync360 - Enhanced</title>
+    <title>SkillsSync360</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            line-height: 1.6;
             margin: 0;
             padding: 20px;
         }
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         h1, h2, h3 {
             color: #333;
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"], input[type="number"], select {
+        input, select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
+            padding: 8px;
+            margin-bottom: 10px;
         }
         button {
-            padding: 10px 20px;
-            background-color: #007bff;
+            background-color: #4CAF50;
             color: white;
+            padding: 10px 15px;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #45a049;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
         }
         th, td {
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 8px;
             text-align: left;
         }
         th {
             background-color: #f2f2f2;
         }
-        .task-description {
-            font-style: italic;
-            color: #666;
-            margin-top: 5px;
+        .task-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .task-row select, .task-row input {
+            flex: 1;
+            margin-right: 10px;
+        }
+        #reportContainer {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>SkillsSync360 - Enhanced</h1>
+        <h1>Welcome to SkillsSync360</h1>
         
-        <div id="team-form">
-            <h2>Team Information</h2>
-            <div class="form-group">
-                <label for="team-name">Team Name:</label>
-                <input type="text" id="team-name" required>
-            </div>
-            <div class="form-group">
-                <label for="team-size">Team Size:</label>
-                <input type="number" id="team-size" required>
-            </div>
-            <div class="form-group">
-                <label for="team-lead">Team Lead:</label>
-                <input type="text" id="team-lead" required>
-            </div>
-            <button onclick="saveTeamInfo()">Submit Team Info</button>
-        </div>
-
-        <div id="team-dashboard" style="display:none;">
-            <h2>Team Dashboard</h2>
-            <p><strong>Team Name:</strong> <span id="display-team-name"></span></p>
-            <p><strong>Team Size:</strong> <span id="display-team-size"></span></p>
-            <p><strong>Team Lead:</strong> <span id="display-team-lead"></span></p>
-
-            <h3>Add Team Member</h3>
-            <div class="form-group">
-                <label for="member-name">Name:</label>
-                <input type="text" id="member-name">
-            </div>
-            <div class="form-group">
-                <label for="member-role">Role:</label>
-                <input type="text" id="member-role">
-            </div>
-            <div class="form-group">
-                <label for="job-select">Job:</label>
-                <select id="job-select" onchange="populateTaskDropdowns()">
-                    <!-- Options will be populated by JavaScript -->
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="talent-rating">Talent Rating:</label>
-                <select id="talent-rating">
-                    <option value="5">Critical</option>
-                    <option value="4">High</option>
-                    <option value="3">Moderate</option>
-                    <option value="2">Low</option>
-                    <option value="1">Emerging</option>
-                </select>
-            </div>
-            <button onclick="addMember()">Add Member</button>
-
-            <h3>Team Members</h3>
-            <table id="team-members-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Role</th>
-                        <th>Job</th>
-                        <th>Talent</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="team-members-body">
-                    <!-- Team members will be appended here -->
-                </tbody>
-            </table>
-
-            <h3>Task Analysis</h3>
-            <div id="task-analysis">
-                <p id="task-analysis-header"></p>
-                <div class="form-group">
-                    <label for="valued-task-select">Valued Task:</label>
-                    <select id="valued-task-select" onchange="displayTaskDescription(this, 'valued-task-description')">
-                        <!-- Options will be populated based on job selection -->
-                    </select>
-                    <p id="valued-task-description" class="task-description"></p>
-                </div>
-                <div class="form-group">
-                    <label for="non-valued-task-select">Non-Valued Task:</label>
-                    <select id="non-valued-task-select" onchange="displayTaskDescription(this, 'non-valued-task-description')">
-                        <!-- Options will be populated based on job selection -->
-                    </select>
-                    <p id="non-valued-task-description" class="task-description"></p>
-                </div>
-                <div class="form-group">
-                    <label for="task-time-percentage">Percentage of Time Spent:</label>
-                    <input type="number" id="task-time-percentage" min="0" max="100">
-                </div>
-                <button onclick="addTaskFromDatabase()">Add Task</button>
-
-                <h4>Tasks for <span id="task-member-name"></span></h4>
-                <table id="tasks-table">
-                    <thead>
-                        <tr>
-                            <th>Task Name</th>
-                            <th>Type</th>
-                            <th>Time Percentage</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tasks-body">
-                        <!-- Tasks will be appended here -->
-                    </tbody>
-                </table>
-            </div>
-
-            <h3>Generate Report</h3>
-            <div class="report-container">
-                <canvas id="talentChart"></canvas>
-                <canvas id="taskDistributionChart"></canvas>
-                <canvas id="sdpChart"></canvas>
-            </div>
-            <button onclick="generateReport()">Generate Report</button>
-        </div>
+        <h2>Team Dashboard</h2>
+        <input type="text" id="teamName" placeholder="Team Name">
+        <input type="number" id="teamSize" placeholder="Team Size">
+        <input type="text" id="teamLeader" placeholder="Team Leader">
+        
+        <h2>Team Details</h2>
+        <input type="text" id="memberName" placeholder="Name">
+        <input type="text" id="memberRole" placeholder="Role">
+        <select id="talentRating" title="Hover for descriptions">
+            <option value="1">1 - Underperformer</option>
+            <option value="2">2 - Inconsistent Performer</option>
+            <option value="3">3 - Emerging Talent</option>
+            <option value="4">4 - Steady Contributor</option>
+            <option value="5">5 - Key Contributor</option>
+            <option value="6">6 - Future Star</option>
+            <option value="7">7 - Solid Performer</option>
+            <option value="8">8 - High Performer</option>
+            <option value="9">9 - Top Talent/Star</option>
+        </select>
+        <button onclick="addTeamMember()">Add Team Member</button>
+        
+        <table id="teamMembersTable">
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Talent Rating</th>
+            </tr>
+        </table>
+        
+        <h2>DILO Task Analysis</h2>
+        <div id="taskContainer"></div>
+        <button onclick="addTaskRow()">Add Task</button>
+        
+        <button onclick="generateReport()">Generate Report</button>
+        
+        <div id="reportContainer"></div>
     </div>
 
     <script>
-        const extensiveJobDatabase = {
-            "IT/Telco Project Manager": {
-                valuedTasks: [
-                    {
-                        name: "Project Planning and Coordination",
-                        description: "Developing detailed project plans, timelines, and milestones. Coordinating with cross-functional teams and updating stakeholders on progress and risks."
-                    },
-                    {
-                        name: "Budget Management",
-                        description: "Monitoring project budgets to ensure alignment with forecasts and identifying cost-saving opportunities without compromising quality."
-                    },
-                    {
-                        name: "Risk Management",
-                        description: "Identifying potential project risks early, developing mitigation strategies, and regularly reviewing risk logs."
-                    },
-                    {
-                        name: "Stakeholder Communication",
-                        description: "Keeping internal and external stakeholders informed through regular updates, meetings, and reports. Managing expectations and ensuring alignment with project goals."
-                    },
-                    {
-                        name: "Resource Allocation",
-                        description: "Assigning the right resources to different tasks and ensuring optimal use to avoid bottlenecks and ensure project efficiency."
-                    },
-                    {
-                        name: "Quality Assurance",
-                        description: "Overseeing the quality of deliverables, conducting regular quality checks, and implementing feedback loops for continuous improvement."
-                    },
-                    {
-                        name: "Vendor Management",
-                        description: "Coordinating with external vendors and suppliers, negotiating contracts and service agreements aligned with project needs and budget constraints."
-                    },
-                    {
-                        name: "Problem Solving and Issue Resolution",
-                        description: "Quickly addressing issues or roadblocks and facilitating resolution by bringing together the right people and resources."
-                    },
-                    {
-                        name: "Continuous Improvement",
-                        description: "Analyzing project performance data to identify areas for improvement and implementing lessons learned from previous projects."
-                    }
-                ],
-                nonValuedTasks: [
-                    {
-                        name: "Excessive Meetings",
-                        description: "Attending unnecessary or poorly structured meetings that do not contribute to project progress."
-                    },
-                    {
-                        name: "Manual Data Entry",
-                        description: "Spending time on repetitive data entry tasks that could be automated."
-                    },
-                    {
-                        name: "Micromanaging Team Members",
-                        description: "Overseeing every detail of a team member's work instead of empowering them to take ownership."
-                    },
-                    {
-                        name: "Administrative Work",
-                        description: "Handling routine administrative tasks that could be delegated to support staff."
-                    },
-                    {
-                        name: "Waiting for Approvals",
-                        description: "Delays caused by waiting for approvals on minor decisions or slow decision-making processes."
-                    },
-                    {
-                        name: "Unnecessary Status Updates",
-                        description: "Providing frequent, detailed status updates when high-level summaries would suffice."
-                    },
-                    {
-                        name: "Redundant Documentation",
-                        description: "Creating and maintaining duplicate or overly detailed documentation that isn't necessary for project success."
-                    },
-                    {
-                        name: "Email Overload",
-                        description: "Responding to a high volume of non-critical emails that do not directly impact project outcomes."
-                    }
-                ]
-            },
-            // Add more jobs here as needed
-        };
+        const teamMembers = [];
+        const tasks = [
+            "Develop project plans and timelines",
+            "Coordinate with cross-functional teams",
+            "Monitor project budgets",
+            "Identify cost-saving opportunities",
+            "Identify and mitigate project risks",
+            "Provide regular stakeholder updates",
+            "Manage stakeholder expectations",
+            "Allocate resources effectively",
+            "Conduct quality assurance checks",
+            "Coordinate with vendors and suppliers",
+            "Negotiate contracts with vendors",
+            "Resolve project issues promptly",
+            "Analyze project performance for improvements",
+            "Attend excessive meetings",
+            "Perform manual data entry",
+            "Micromanage team members",
+            "Handle routine administrative tasks",
+            "Wait for unnecessary approvals",
+            "Provide excessive status updates",
+            "Create redundant documentation",
+            "Manage non-critical emails"
+        ];
 
-        const teamMembers = {};
-        let currentMember = '';
+        const proficiencyLevels = [
+            { level: 1, description: "Novice (1-2): Basic understanding, requires guidance" },
+            { level: 2, description: "Novice (1-2): Basic understanding, requires guidance" },
+            { level: 3, description: "Intermediate (3-4): Can perform with some support" },
+            { level: 4, description: "Intermediate (3-4): Can perform with some support" },
+            { level: 5, description: "Proficient (5-6): Competently performs independently" },
+            { level: 6, description: "Proficient (5-6): Competently performs independently" },
+            { level: 7, description: "Advanced (7-8): High-level performance, guides others" },
+            { level: 8, description: "Advanced (7-8): High-level performance, guides others" },
+            { level: 9, description: "Expert (9-10): Recognized authority, innovates" },
+            { level: 10, description: "Expert (9-10): Recognized authority, innovates" }
+        ];
 
-        function saveTeamInfo() {
-            const teamName = document.getElementById('team-name').value;
-            const teamSize = document.getElementById('team-size').value;
-            const teamLead = document.getElementById('team-lead').value;
+        const skills = [
+            "Project Management",
+            "Budgeting",
+            "Risk Management",
+            "Stakeholder Communication",
+            "Resource Allocation",
+            "Quality Assurance",
+            "Vendor Management",
+            "Problem-Solving",
+            "Data Analysis",
+            "Negotiation",
+            "Time Management",
+            "Leadership",
+            "Strategic Planning",
+            "Process Improvement",
+            "Team Collaboration"
+        ];
 
-            document.getElementById('display-team-name').textContent = teamName;
-            document.getElementById('display-team-size').textContent = teamSize;
-            document.getElementById('display-team-lead').textContent = teamLead;
-
-            document.getElementById('team-form').style.display = 'none';
-            document.getElementById('team-dashboard').style.display = 'block';
-
-            populateJobDropdown();
-        }
-
-        function populateJobDropdown() {
-            const jobSelect = document.getElementById('job-select');
-            jobSelect.innerHTML = '<option value="">Select a Job</option>';
-            for (const job in extensiveJobDatabase) {
-                jobSelect.innerHTML += `<option value="${job}">${job}</option>`;
-            }
-        }
-
-        function populateTaskDropdowns() {
-            const jobSelect = document.getElementById('job-select');
-            const selectedJob = jobSelect.value;
-            const valuedTaskSelect = document.getElementById('valued-task-select');
-            const nonValuedTaskSelect = document.getElementById('non-valued-task-select');
+        function addTeamMember() {
+            const name = document.getElementById('memberName').value;
+            const role = document.getElementById('memberRole').value;
+            const talentRating = document.getElementById('talentRating').value;
             
-            valuedTaskSelect.innerHTML = '<option value="">Select a Valued Task</option>';
-            nonValuedTaskSelect.innerHTML = '<option value="">Select a Non-Valued Task</option>';
-            
-            if (selectedJob && extensiveJobDatabase[selectedJob]) {
-                extensiveJobDatabase[selectedJob].valuedTasks.forEach(task => {
-                    valuedTaskSelect.innerHTML += `<option value="${task.name}">${task.name}</option>`;
-                });
-                extensiveJobDatabase[selectedJob].nonValuedTasks.forEach(task => {
-                    nonValuedTaskSelect.innerHTML += `<option value="${task.name}">${task.name}</option>`;
-                });
-            }
-        }
-
-        function displayTaskDescription(selectElement, descriptionElementId) {
-            const selectedJob = document.getElementById('job-select').value;
-            const selectedTask = selectElement.value;
-            const descriptionElement = document.getElementById(descriptionElementId);
-            
-            let taskList = selectElement.id === 'valued-task-select' ? extensiveJobDatabase[selectedJob].valuedTasks : extensiveJobDatabase[selectedJob].nonValuedTasks;
-            let task = taskList.find(t => t.name === selectedTask);
-            
-            if (task) {
-                descriptionElement.textContent = task.description;
+            if (name && role && talentRating) {
+                teamMembers.push({ name, role, talentRating });
+                updateTeamMembersTable();
+                clearTeamMemberInputs();
             } else {
-                descriptionElement.textContent = '';
+                alert('Please fill in all fields');
             }
         }
 
-        function addMember() {
-            const memberName = document.getElementById('member-name').value;
-            const memberRole = document.getElementById('member-role').value;
-            const jobSelect = document.getElementById('job-select');
-            const selectedJob = jobSelect.value;
-            const talentRating = parseInt(document.getElementById('talent-rating').value);
-
-            if (memberName && memberRole && selectedJob) {
-                teamMembers[memberName] = {
-                    role: memberRole,
-                    job: selectedJob,
-                    talent: talentRating,
-                    tasks: []
-                };
-
-                renderMembers();
-                clearMemberForm();
-            } else {
-                alert("Please fill in all fields, including job selection");
-            }
-        }
-
-        function renderMembers() {
-            const tbody = document.getElementById('team-members-body');
+        function updateTeamMembersTable() {
+            const table = document.getElementById('teamMembersTable');
+            const tbody = table.getElementsByTagName('tbody')[0];
             tbody.innerHTML = '';
-            for (const memberName in teamMembers) {
-                const member = teamMembers[memberName];
-                const row = document.createElement('tr');
-
-                row.innerHTML = `
-                    <td>${memberName}</td>
-                    <td>${member.role}</td>
-                    <td>${member.job}</td>
-                    <td>${member.talent}</td>
-                    <td><button onclick="deleteMember('${memberName}')">Delete</button></td>
-                `;
-                row.onclick = () => selectMember(memberName);
-
-                tbody.appendChild(row);
-            }
-        }
-
-        function clearMemberForm() {
-            document.getElementById('member-name').value = '';
-            document.getElementById('member-role').value = '';
-            document.getElementById('job-select').value = '';
-            document.getElementById('talent-rating').value = '3';
-        }
-
-        function deleteMember(memberName) {
-            delete teamMembers[memberName];
-            renderMembers();
-        }
-
-        function selectMember(memberName) {
-            currentMember = memberName;
-            document.getElementById('task-analysis-header').textContent = `Task Analysis for ${memberName}`;
-            document.getElementById('task-member-name').textContent = memberName;
-            document.getElementById('job-select').value = teamMembers[memberName].job;
-            populateTaskDropdowns();
-            
-renderTasks();
-        }
-
-        function addTaskFromDatabase() {
-            if (!currentMember) {
-                alert("Please select a team member first.");
-                return;
-            }
-            
-            const valuedTaskSelect = document.getElementById('valued-task-select');
-            const nonValuedTaskSelect = document.getElementById('non-valued-task-select');
-            const timePercentage = document.getElementById('task-time-percentage').value;
-            
-            let taskName, isValued;
-            if (valuedTaskSelect.value) {
-                taskName = valuedTaskSelect.value;
-                isValued = true;
-            } else if (nonValuedTaskSelect.value) {
-                taskName = nonValuedTaskSelect.value;
-                isValued = false;
-            } else {
-                alert("Please select a task");
-                return;
-            }
-            
-            if (!timePercentage) {
-                alert("Please enter the percentage of time spent on this task");
-                return;
-            }
-            
-            teamMembers[currentMember].tasks.push({
-                name: taskName,
-                isValued: isValued,
-                timePercentage: parseFloat(timePercentage)
-            });
-            
-            renderTasks();
-            clearTaskForm();
-        }
-
-        function renderTasks() {
-            const tbody = document.getElementById('tasks-body');
-            tbody.innerHTML = '';
-            const tasks = teamMembers[currentMember].tasks;
-            tasks.forEach(task => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${task.name}</td>
-                    <td>${task.isValued ? 'Valued' : 'Non-Valued'}</td>
-                    <td>${task.timePercentage}%</td>
-                `;
-                tbody.appendChild(row);
+            teamMembers.forEach(member => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = member.name;
+                row.insertCell(1).textContent = member.role;
+                row.insertCell(2).textContent = member.talentRating;
             });
         }
 
-        function clearTaskForm() {
-            document.getElementById('valued-task-select').value = '';
-            document.getElementById('non-valued-task-select').value = '';
-            document.getElementById('task-time-percentage').value = '';
-            document.getElementById('valued-task-description').textContent = '';
-            document.getElementById('non-valued-task-description').textContent = '';
+        function clearTeamMemberInputs() {
+            document.getElementById('memberName').value = '';
+            document.getElementById('memberRole').value = '';
+            document.getElementById('talentRating').value = '1';
         }
 
-        function calculateTE(tasks) {
-            const totalValuedTime = tasks.reduce((sum, task) => task.isValued ? sum + task.timePercentage : sum, 0);
-            const totalTime = tasks.reduce((sum, task) => sum + task.timePercentage, 0);
-            return totalValuedTime / totalTime;
+        function addTaskRow() {
+            const container = document.getElementById('taskContainer');
+            const row = document.createElement('div');
+            row.className = 'task-row';
+            row.innerHTML = `
+                <select class="task-name">
+                    ${tasks.map(task => `<option value="${task}">${task}</option>`).join('')}
+                </select>
+                <select class="task-value">
+                    <option value="valued">Valued</option>
+                    <option value="non-valued">Non-valued</option>
+                </select>
+                <select class="proficiency-level">
+                    ${proficiencyLevels.map(level => `<option value="${level.level}" title="${level.description}">${level.level}</option>`).join('')}
+                </select>
+                <input type="text" class="skills-required" readonly>
+            `;
+            container.appendChild(row);
+            row.querySelector('.task-value').addEventListener('change', updateProficiencyAndSkills);
+            row.querySelector('.proficiency-level').addEventListener('change', updateSkills);
+            updateProficiencyAndSkills.call(row.querySelector('.task-value'));
         }
 
-        function calculateTSA(talentScore, te) {
-            return talentScore * te;
-        }
-
-        function calculateSGF(job, tasks) {
-            const allRequiredSkills = new Set(extensiveJobDatabase[job].valuedTasks.map(task => task.name));
-            const currentSkills = new Set(tasks.filter(task => task.isValued).map(task => task.name));
-            const missingSkills = [...allRequiredSkills].filter(skill => !currentSkills.has(skill));
-            return missingSkills.length / allRequiredSkills.size;
-        }
-
-        function calculateSDP(tsa, sgf) {
-            return tsa * sgf;
-        }
-
-        function suggestLearningPathway(sdp) {
-            if (sdp > 0.6) {
-                return "Advanced Leadership Training";
-            } else if (sdp > 0.3) {
-                return "Targeted Skill Improvement";
+        function updateProficiencyAndSkills() {
+            const row = this.closest('.task-row');
+            const proficiencySelect = row.querySelector('.proficiency-level');
+            const skillsInput = row.querySelector('.skills-required');
+            
+            if (this.value === 'non-valued') {
+                proficiencySelect.disabled = true;
+                proficiencySelect.value = '';
+                skillsInput.value = 'N/A';
             } else {
-                return "Maintain Current Performance or Lateral Development";
+                proficiencySelect.disabled = false;
+                updateSkills.call(proficiencySelect);
             }
+        }
+
+        function updateSkills() {
+            if (this.disabled) return;
+            const row = this.closest('.task-row');
+            const skillsInput = row.querySelector('.skills-required');
+            const proficiencyLevel = parseInt(this.value);
+            const numberOfSkills = Math.max(1, Math.min(5, 6 - proficiencyLevel));
+            const selectedSkills = [];
+            while (selectedSkills.length < numberOfSkills) {
+                const skill = skills[Math.floor(Math.random() * skills.length)];
+                if (!selectedSkills.includes(skill)) {
+                    selectedSkills.push(skill);
+                }
+            }
+            skillsInput.value = selectedSkills.join(', ');
         }
 
         function generateReport() {
-            if (Object.keys(teamMembers).length === 0) {
-                alert('Please add at least one team member to generate a report.');
-                return;
-            }
-
-            const talentRatingMap = {
-                5: "Critical",
-                4: "High",
-                3: "Moderate",
-                2: "Low",
-                1: "Emerging"
-            };
-
-            const sdpData = [];
-            const talentDistribution = {
-                "Critical": 0,
-                "High": 0,
-                "Moderate": 0,
-                "Low": 0,
-                "Emerging": 0
-            };
-            let totalValuedTime = 0;
-            let totalNonValuedTime = 0;
-
-            for (const memberName in teamMembers) {
-                const member = teamMembers[memberName];
-                const te = calculateTE(member.tasks);
-                const tsa = calculateTSA(member.talent, te);
-                const sgf = calculateSGF(member.job, member.tasks);
-                const sdp = calculateSDP(tsa, sgf);
-
-                sdpData.push({
-                    name: memberName,
-                    sdp: sdp,
-                    learningPathway: suggestLearningPathway(sdp)
-                });
-
-                talentDistribution[talentRatingMap[member.talent]]++;
-
-                member.tasks.forEach(task => {
-                    if (task.isValued) {
-                        totalValuedTime += task.timePercentage;
-                    } else {
-                        totalNonValuedTime += task.timePercentage;
-                    }
-                });
-            }
-
-            // Generate Talent Distribution Chart
-            const ctxTalent = document.getElementById('talentChart').getContext('2d');
-            new Chart(ctxTalent, {
+            const reportContainer = document.getElementById('reportContainer');
+            reportContainer.innerHTML = '<h2>Generated Report</h2>';
+            
+            // 1. Talent distribution report
+            const talentDistribution = {};
+            teamMembers.forEach(member => {
+                talentDistribution[member.talentRating] = (talentDistribution[member.talentRating] || 0) + 1;
+            });
+            reportContainer.innerHTML += '<h3>1. Talent Distribution Report</h3>';
+            reportContainer.innerHTML += `<canvas id="talentDistributionChart"></canvas>`;
+            new Chart(document.getElementById('talentDistributionChart'), {
                 type: 'pie',
                 data: {
                     labels: Object.keys(talentDistribution),
                     datasets: [{
                         data: Object.values(talentDistribution),
-                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+                        backgroundColor: [
+                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                            '#FF9F40', '#FF6384', '#36A2EB', '#FFCE56'
+                        ]
                     }]
                 },
                 options: {
@@ -550,14 +276,20 @@ renderTasks();
                 }
             });
 
-            // Generate Task Distribution Chart
-            const ctxTask = document.getElementById('taskDistributionChart').getContext('2d');
-            new Chart(ctxTask, {
+            // 2. Valued vs non-valued task distribution
+            const taskDistribution = { valued: 0, nonValued: 0 };
+            document.querySelectorAll('.task-value').forEach(select => {
+                if (select.value === 'valued') taskDistribution.valued++;
+                else taskDistribution.nonValued++;
+            });
+            reportContainer.innerHTML += '<h3>2. Valued vs Non-valued Task Distribution</h3>';
+            reportContainer.innerHTML += `<canvas id="taskDistributionChart"></canvas>`;
+            new Chart(document.getElementById('taskDistributionChart'), {
                 type: 'pie',
                 data: {
-                    labels: ['Valued Tasks', 'Non-Valued Tasks'],
+                    labels: ['Valued Tasks', 'Non-valued Tasks'],
                     datasets: [{
-                        data: [totalValuedTime, totalNonValuedTime],
+                        data: [taskDistribution.valued, taskDistribution.nonValued],
                         backgroundColor: ['#36A2EB', '#FF6384']
                     }]
                 },
@@ -570,54 +302,77 @@ renderTasks();
                 }
             });
 
-            // Generate SDP Chart
-            const ctxSDP = document.getElementById('sdpChart').getContext('2d');
-            new Chart(ctxSDP, {
+            // 3. Proficiency level distribution
+            const proficiencyDistribution = {};
+            document.querySelectorAll('.proficiency-level').forEach(select => {
+                if (!select.disabled) {
+                    proficiencyDistribution[select.value] = (proficiencyDistribution[select.value] || 0) + 1;
+                }
+            });
+            reportContainer.innerHTML += '<h3>3. Proficiency Level Distribution</h3>';
+            reportContainer.innerHTML += `<canvas id="proficiencyDistributionChart"></canvas>`;
+            new Chart(document.getElementById('proficiencyDistributionChart'), {
                 type: 'bar',
                 data: {
-                    labels: sdpData.map(d => d.name),
+                    labels: Object.keys(proficiencyDistribution),
                     datasets: [{
-                        label: 'Skill Development Priority',
-                        data: sdpData.map(d => d.sdp),
-                        backgroundColor: sdpData.map(() => getRandomColor(0.7))
+                        label: 'Proficiency Level',
+                        data: Object.values(proficiencyDistribution),
+                        backgroundColor: '#4BC0C0'
                     }]
                 },
                 options: {
                     responsive: true,
                     scales: {
                         y: {
-                            beginAtZero: true,
-                            max: 1
+                            beginAtZero: true
                         }
                     },
                     title: {
                         display: true,
-                        text: 'Skill Development Priority'
-                    },
-                    tooltips: {
-                        callbacks: {
-                            afterLabel: function(tooltipItem, data) {
-                                return `Learning Pathway: ${sdpData[tooltipItem.index].learningPathway}`;
-                            }
-                        }
+                        text: 'Proficiency Level Distribution'
                     }
                 }
             });
 
-            alert('Report generated successfully!');
+            // 4. Skills required distribution
+            const skillsDistribution = {};
+            document.querySelectorAll('.skills-required').forEach(input => {
+                if (input.value !== 'N/A') {
+                    input.value.split(', ').forEach(skill => {
+                        skillsDistribution[skill] = (skillsDistribution[skill] || 0) + 1;
+                    });
+                }
+            });
+            reportContainer.innerHTML += '<h3>4. Skills Required Distribution</h3>';
+            reportContainer.innerHTML += `<canvas id="skillsDistributionChart"></canvas>`;
+            new Chart(document.getElementById('skillsDistributionChart'), {
+                type: 'horizontalBar',
+                data: {
+                    labels: Object.keys(skillsDistribution),
+                    datasets: [{
+                        label: 'Skills Required',
+                        data: Object.values(skillsDistribution),
+                        backgroundColor: '#9966FF'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Skills Required Distribution'
+                    }
+                }
+            });
         }
 
-        function getRandomColor(alpha) {
-            const r = Math.floor(Math.random() * 255);
-            const g = Math.floor(Math.random() * 255);
-            const b = Math.floor(Math.random() * 255);
-            return `rgba(${r},${g},${b},${alpha})`;
-        }
-
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            populateJobDropdown();
-        });
+        // Initialize with one task row
+        addTaskRow();
     </script>
 </body>
 </html>
