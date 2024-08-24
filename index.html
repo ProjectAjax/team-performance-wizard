@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillsSync360</title>
+    <title>SkillsSync360 - Enhanced</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -131,7 +132,7 @@
 
 <div class="container">
     <div class="centered">
-        <h1>Welcome to SkillsSync360</h1>
+        <h1>Welcome to SkillsSync360 - Enhanced</h1>
     </div>
     <form id="team-form">
         <h2>Team Information</h2>
@@ -232,6 +233,14 @@
                     <label for="non-valued-tasks-percent">Non-Valued Tasks %:</label>
                     <input type="number" id="non-valued-tasks-percent" min="0" max="100">
                 </div>
+                <div>
+                    <label for="current-skills">Current Skills (comma-separated):</label>
+                    <input type="text" id="current-skills">
+                </div>
+                <div>
+                    <label for="required-skills">Required Skills (comma-separated):</label>
+                    <input type="text" id="required-skills">
+                </div>
             </div>
             <button type="button" onclick="addTask()">Add Task</button>
 
@@ -264,6 +273,10 @@
             <div>
                 <h3>Skills Distribution</h3>
                 <canvas id="skillsRadarChart"></canvas>
+            </div>
+            <div>
+                <h3>Skill Development Priority</h3>
+                <canvas id="sdpChart"></canvas>
             </div>
         </div>
 
@@ -348,20 +361,24 @@
         const skillsRequired = document.getElementById('skills-required').value;
         const vtPercent = parseFloat(document.getElementById('valued-tasks-percent').value) || 0;
         const nvtPercent = parseFloat(document.getElementById('non-valued-tasks-percent').value) || 0;
+        const currentSkills = document.getElementById('current-skills').value.split(',').map(s => s.trim());
+        const requiredSkills = document.getElementById('required-skills').value.split(',').map(s => s.trim());
 
-        if (taskName && skillsRequired) {
+        if (taskName && skillsRequired && currentSkills.length && requiredSkills.length) {
             teamMembers[currentMember].tasks.push({
                 name: taskName,
                 importance: taskImportance,
                 quality: timeQuality,
                 skills: skillsRequired,
                 vtPercent: vtPercent,
-                nvtPercent: nvtPercent
+                nvtPercent: nvtPercent,
+                currentSkills: currentSkills,
+                requiredSkills: requiredSkills
             });
             renderTasks();
             clearTaskForm();
         } else {
-            alert("Please enter all task details.");
+            alert("Please enter all task details including current and required skills.");
         }
     }
 
@@ -388,32 +405,46 @@
         document.getElementById('skills-required').value = '';
         document.getElementById('valued-tasks-percent').value = '';
         document.getElementById('non-valued-tasks-percent').value = '';
+        document.getElementById('current-skills').value = '';
+        document.getElementById('required-skills').value = '';
     }
 
-    // Calculate Task Efficiency
+    // Calculate Task Efficiency (TE)
     function calculateTE(vtPercent, nvtPercent) {
         return vtPercent / (vtPercent + nvtPercent);
     }
 
-    // Calculate Talent Score Adjustment
+    // Calculate Talent Score Adjustment (TSA)
     function calculateTSA(talentScore, te) {
         return talentScore * te;
     }
 
-    // Calculate Skill Gap Factor
+    // Calculate Skill Gap Factor (SGF)
     function calculateSGF(requiredSkills, currentSkills) {
-        const skillGap = requiredSkills.reduce((acc, req, index) => acc + Math.max(0, req - currentSkills[index]), 0);
+        const skillGap = requiredSkills.reduce((acc, skill) => acc + (currentSkills.includes(skill) ? 0 : 1), 0);
         return skillGap / requiredSkills.length;
     }
 
-    // Calculate Skill Development Priority
+    // Calculate Skill Development Priority (SDP)
     function calculateSDP(tsa, sgf) {
         return tsa * sgf;
     }
 
+    // Suggest Learning Pathway Based on SDP
+    
+    function suggestLearningPathway(sdp) {
+        if (sdp > 0.6) {
+            return "Advanced Leadership Training";
+        } else if (sdp > 0.3) {
+            return "Targeted Skill Improvement";
+        } else {
+            return "Maintain Current Performance or Lateral Development";
+        }
+    }
+
     // Report Generation Function
     function generateReport() {
-        console.log("Generate Report function triggered!");
+        console.log("Generate Enhanced Report function triggered!");
 
         if (Object.keys(teamMembers).length === 0) {
             alert('Please add at least one team member to generate a report.');
@@ -421,11 +452,11 @@
         }
 
         const talentRatingMap = {
-            "Critical": 5,
-            "High": 4,
-            "Moderate": 3,
-            "Low": 2,
-            "Emerging": 1
+            5: "Critical",
+            4: "High",
+            3: "Moderate",
+            2: "Low",
+            1: "Emerging"
         };
 
         let totalTalent = 0;
@@ -433,6 +464,7 @@
         const skillCounts = {};
         const taskImportanceCounts = {"High": 0, "Medium": 0, "Low": 0};
         const timeQualityCounts = {"Excellent": 0, "Good": 0, "Poor": 0};
+        const sdpData = [];
 
         const radarData = {
             labels: [],
@@ -441,10 +473,15 @@
 
         for (const memberName in teamMembers) {
             const member = teamMembers[memberName];
-            totalTalent += talentRatingMap[member.talent];
+            totalTalent += member.talent;
 
             // Count Roles
             roleCounts[member.role] = (roleCounts[member.role] || 0) + 1;
+
+            let totalVTPercent = 0;
+            let totalNVTPercent = 0;
+            let allRequiredSkills = new Set();
+            let allCurrentSkills = new Set();
 
             // Process Tasks
             member.tasks.forEach(task => {
@@ -457,25 +494,24 @@
                         radarData.labels.push(skill);
                     }
                 });
+
+                totalVTPercent += task.vtPercent;
+                totalNVTPercent += task.nvtPercent;
+                task.requiredSkills.forEach(skill => allRequiredSkills.add(skill));
+                task.currentSkills.forEach(skill => allCurrentSkills.add(skill));
             });
 
-            // ** Calculate TE, TSA, SGF, and SDP **
-
-            // Calculate Task Efficiency (TE) for each member
-            const totalVTPercent = member.tasks.reduce((sum, task) => sum + task.vtPercent, 0);
-            const totalNVTPercent = member.tasks.reduce((sum, task) => sum + task.nvtPercent, 0);
+            // Calculate TE, TSA, SGF, and SDP
             const te = calculateTE(totalVTPercent, totalNVTPercent);
-
-            // Adjust Talent Score based on Task Efficiency
-            const tsa = calculateTSA(talentRatingMap[member.talent], te);
-
-            // Define required skills and current skills
-            const requiredSkills = [4, 5, 5, 4]; // Example required skills
-            const currentSkills = [3, 4, 2, 3]; // Example current skills
-            const sgf = calculateSGF(requiredSkills, currentSkills);
-
-            // Determine Skill Development Priority (SDP)
+            const tsa = calculateTSA(member.talent, te);
+            const sgf = calculateSGF(Array.from(allRequiredSkills), Array.from(allCurrentSkills));
             const sdp = calculateSDP(tsa, sgf);
+
+            sdpData.push({
+                name: memberName,
+                sdp: sdp,
+                learningPathway: suggestLearningPathway(sdp)
+            });
 
             // Populate radar chart data for each member
             radarData.datasets.push({
@@ -494,18 +530,16 @@
 
         const avgTalentRating = totalTalent / Object.keys(teamMembers).length;
 
-        // ** Generate Updated Charts **
-
         // Generate Talent Distribution Chart
         const ctxTalent = document.getElementById('talentChart').getContext('2d');
         new Chart(ctxTalent, {
             type: 'pie',
             data: {
-                labels: Object.keys(talentRatingMap),
+                labels: Object.values(talentRatingMap),
                 datasets: [{
                     label: 'Talent Distribution',
-                    data: Object.values(talentRatingMap).map(key => {
-                        return Object.values(teamMembers).filter(member => talentRatingMap[member.talent] === key).length;
+                    data: Object.keys(talentRatingMap).map(key => {
+                        return Object.values(teamMembers).filter(member => member.talent === parseInt(key)).length;
                     }),
                     backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
                 }]
@@ -517,11 +551,7 @@
                     tooltip: {
                         callbacks: {
                             label: function(tooltipItem) {
-                                let sum = 0;
-                                let dataArr = tooltipItem.dataset.data;
-                                dataArr.map(data => {
-                                    sum += data;
-                                });
+                                let sum = tooltipItem.dataset.data.reduce((a, b) => a + b, 0);
                                 let percentage = (tooltipItem.raw / sum * 100).toFixed(2) + '%';
                                 return tooltipItem.label + ': ' + percentage;
                             }
@@ -561,13 +591,35 @@
                 },
                 maintainAspectRatio: false,
                 responsive: true,
+            }
+        });
+
+        // Generate new SDP Chart
+        const ctxSDP = document.getElementById('sdpChart').getContext('2d');
+        new Chart(ctxSDP, {
+            type: 'bar',
+            data: {
+                labels: sdpData.map(d => d.name),
+                datasets: [{
+                    label: 'Skill Development Priority',
+                    data: sdpData.map(d => d.sdp),
+                    backgroundColor: sdpData.map(() => getRandomColor(0.7)),
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 1
+                    }
+                },
                 plugins: {
                     tooltip: {
                         callbacks: {
-                            afterLabel: function(tooltipItem) {
-                                const datasetIndex = tooltipItem.datasetIndex;
-                                const label = radarData.datasets[datasetIndex].label;
-                                return `Learning Pathway: ${suggestLearningPathway(sdp)}`;
+                            afterLabel: function(context) {
+                                return `Learning Pathway: ${sdpData[context.dataIndex].learningPathway}`;
                             }
                         }
                     }
@@ -575,18 +627,7 @@
             }
         });
 
-        alert('Report generated successfully with updated metrics and learning pathways!');
-    }
-
-    // Function to Suggest Learning Pathway Based on SDP
-    function suggestLearningPathway(sdp) {
-        if (sdp > 2) {
-            return "Advanced Leadership Training";
-        } else if (sdp > 1) {
-            return "Targeted Skill Improvement";
-        } else {
-            return "Maintain Current Performance or Lateral Development";
-        }
+        alert('Enhanced report generated successfully with updated metrics and learning pathways!');
     }
 
     // Function to generate random color
