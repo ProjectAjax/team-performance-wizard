@@ -213,11 +213,13 @@
             document.getElementById('taskSelect').value = '';
             document.getElementById('taskValue').value = '';
             document.getElementById('timeSpent').value = '';
+            updateTaskValue();  // To reset the task value input
         }
 
         function deleteTeamMember(index) {
             teamMembers.splice(index, 1);
             updateTeamMembersTable();
+            selectedEmployee = null;  // Reset selected employee
         }
 
         function clearTeamMemberInputs() {
