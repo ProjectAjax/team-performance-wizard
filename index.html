@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillsSync360</title>
+    <title>SkillsSync360 - Refined</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
@@ -11,10 +11,15 @@
             line-height: 1.6;
             margin: 0;
             padding: 20px;
+            background-color: #f4f4f4;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         h1, h2, h3 {
             color: #333;
@@ -23,24 +28,28 @@
             width: 100%;
             padding: 8px;
             margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
         button {
-            background-color: #4CAF50;
+            background-color: #007bff;
             color: white;
             padding: 10px 15px;
             border: none;
+            border-radius: 4px;
             cursor: pointer;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #0056b3;
         }
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
         th, td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 12px;
             text-align: left;
         }
         th {
@@ -57,20 +66,29 @@
         #reportContainer {
             margin-top: 20px;
         }
+        .chart-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to SkillsSync360</h1>
+        <h1>SkillsSync360</h1>
         
         <h2>Team Dashboard</h2>
         <input type="text" id="teamName" placeholder="Team Name">
         <input type="number" id="teamSize" placeholder="Team Size">
         <input type="text" id="teamLeader" placeholder="Team Leader">
         
-        <h2>Team Details</h2>
+        <h2>Add Team Member</h2>
         <input type="text" id="memberName" placeholder="Name">
-        <input type="text" id="memberRole" placeholder="Role">
+        <select id="memberJob">
+            <option value="">Select Job</option>
+            <option value="IT/Telco Project Manager">IT/Telco Project Manager</option>
+            <!-- Add more job options as needed -->
+        </select>
         <select id="talentRating" title="Hover for descriptions">
             <option value="1">1 - Underperformer</option>
             <option value="2">2 - Inconsistent Performer</option>
@@ -84,15 +102,17 @@
         </select>
         <button onclick="addTeamMember()">Add Team Member</button>
         
+        <h2>Team Members</h2>
         <table id="teamMembersTable">
             <tr>
                 <th>Name</th>
-                <th>Role</th>
+                <th>Job</th>
                 <th>Talent Rating</th>
+                <th>Action</th>
             </tr>
         </table>
         
-        <h2>DILO Task Analysis</h2>
+        <h2>Task Analysis</h2>
         <div id="taskContainer"></div>
         <button onclick="addTaskRow()">Add Task</button>
         
@@ -104,67 +124,25 @@
     <script>
         const teamMembers = [];
         const tasks = [
-            "Develop project plans and timelines",
-            "Coordinate with cross-functional teams",
-            "Monitor project budgets",
-            "Identify cost-saving opportunities",
-            "Identify and mitigate project risks",
-            "Provide regular stakeholder updates",
-            "Manage stakeholder expectations",
-            "Allocate resources effectively",
-            "Conduct quality assurance checks",
-            "Coordinate with vendors and suppliers",
-            "Negotiate contracts with vendors",
-            "Resolve project issues promptly",
-            "Analyze project performance for improvements",
-            "Attend excessive meetings",
-            "Perform manual data entry",
-            "Micromanage team members",
-            "Handle routine administrative tasks",
-            "Wait for unnecessary approvals",
-            "Provide excessive status updates",
-            "Create redundant documentation",
-            "Manage non-critical emails"
-        ];
-
-        const proficiencyLevels = [
-            { level: 1, description: "Novice (1-2): Basic understanding, requires guidance" },
-            { level: 2, description: "Novice (1-2): Basic understanding, requires guidance" },
-            { level: 3, description: "Intermediate (3-4): Can perform with some support" },
-            { level: 4, description: "Intermediate (3-4): Can perform with some support" },
-            { level: 5, description: "Proficient (5-6): Competently performs independently" },
-            { level: 6, description: "Proficient (5-6): Competently performs independently" },
-            { level: 7, description: "Advanced (7-8): High-level performance, guides others" },
-            { level: 8, description: "Advanced (7-8): High-level performance, guides others" },
-            { level: 9, description: "Expert (9-10): Recognized authority, innovates" },
-            { level: 10, description: "Expert (9-10): Recognized authority, innovates" }
-        ];
-
-        const skills = [
-            "Project Management",
-            "Budgeting",
-            "Risk Management",
-            "Stakeholder Communication",
-            "Resource Allocation",
-            "Quality Assurance",
-            "Vendor Management",
-            "Problem-Solving",
-            "Data Analysis",
-            "Negotiation",
-            "Time Management",
-            "Leadership",
-            "Strategic Planning",
-            "Process Improvement",
-            "Team Collaboration"
+            { name: "Project Planning", valued: true },
+            { name: "Stakeholder Communication", valued: true },
+            { name: "Risk Management", valued: true },
+            { name: "Quality Assurance", valued: true },
+            { name: "Team Leadership", valued: true },
+            { name: "Excessive Meetings", valued: false },
+            { name: "Administrative Work", valued: false },
+            { name: "Manual Data Entry", valued: false },
+            { name: "Unnecessary Reporting", valued: false },
+            { name: "Email Management", valued: false }
         ];
 
         function addTeamMember() {
             const name = document.getElementById('memberName').value;
-            const role = document.getElementById('memberRole').value;
+            const job = document.getElementById('memberJob').value;
             const talentRating = document.getElementById('talentRating').value;
             
-            if (name && role && talentRating) {
-                teamMembers.push({ name, role, talentRating });
+            if (name && job && talentRating) {
+                teamMembers.push({ name, job, talentRating });
                 updateTeamMembersTable();
                 clearTeamMemberInputs();
             } else {
@@ -176,17 +154,26 @@
             const table = document.getElementById('teamMembersTable');
             const tbody = table.getElementsByTagName('tbody')[0];
             tbody.innerHTML = '';
-            teamMembers.forEach(member => {
+            teamMembers.forEach((member, index) => {
                 const row = tbody.insertRow();
                 row.insertCell(0).textContent = member.name;
-                row.insertCell(1).textContent = member.role;
+                row.insertCell(1).textContent = member.job;
                 row.insertCell(2).textContent = member.talentRating;
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = () => deleteTeamMember(index);
+                row.insertCell(3).appendChild(deleteButton);
             });
+        }
+
+        function deleteTeamMember(index) {
+            teamMembers.splice(index, 1);
+            updateTeamMembersTable();
         }
 
         function clearTeamMemberInputs() {
             document.getElementById('memberName').value = '';
-            document.getElementById('memberRole').value = '';
+            document.getElementById('memberJob').value = '';
             document.getElementById('talentRating').value = '1';
         }
 
@@ -195,53 +182,21 @@
             const row = document.createElement('div');
             row.className = 'task-row';
             row.innerHTML = `
-                <select class="task-name">
-                    ${tasks.map(task => `<option value="${task}">${task}</option>`).join('')}
+                <select class="task-name" onchange="updateTaskValue(this)">
+                    <option value="">Select a Task</option>
+                    ${tasks.map(task => `<option value="${task.name}">${task.name}</option>`).join('')}
                 </select>
-                <select class="task-value">
-                    <option value="valued">Valued</option>
-                    <option value="non-valued">Non-valued</option>
-                </select>
-                <select class="proficiency-level">
-                    ${proficiencyLevels.map(level => `<option value="${level.level}" title="${level.description}">${level.level}</option>`).join('')}
-                </select>
-                <input type="text" class="skills-required" readonly>
+                <input type="text" class="task-value" readonly>
+                <input type="number" class="time-spent" placeholder="% Time Spent" min="0" max="100">
             `;
             container.appendChild(row);
-            row.querySelector('.task-value').addEventListener('change', updateProficiencyAndSkills);
-            row.querySelector('.proficiency-level').addEventListener('change', updateSkills);
-            updateProficiencyAndSkills.call(row.querySelector('.task-value'));
         }
 
-        function updateProficiencyAndSkills() {
-            const row = this.closest('.task-row');
-            const proficiencySelect = row.querySelector('.proficiency-level');
-            const skillsInput = row.querySelector('.skills-required');
-            
-            if (this.value === 'non-valued') {
-                proficiencySelect.disabled = true;
-                proficiencySelect.value = '';
-                skillsInput.value = 'N/A';
-            } else {
-                proficiencySelect.disabled = false;
-                updateSkills.call(proficiencySelect);
-            }
-        }
-
-        function updateSkills() {
-            if (this.disabled) return;
-            const row = this.closest('.task-row');
-            const skillsInput = row.querySelector('.skills-required');
-            const proficiencyLevel = parseInt(this.value);
-            const numberOfSkills = Math.max(1, Math.min(5, 6 - proficiencyLevel));
-            const selectedSkills = [];
-            while (selectedSkills.length < numberOfSkills) {
-                const skill = skills[Math.floor(Math.random() * skills.length)];
-                if (!selectedSkills.includes(skill)) {
-                    selectedSkills.push(skill);
-                }
-            }
-            skillsInput.value = selectedSkills.join(', ');
+        function updateTaskValue(select) {
+            const row = select.closest('.task-row');
+            const taskValue = row.querySelector('.task-value');
+            const selectedTask = tasks.find(task => task.name === select.value);
+            taskValue.value = selectedTask ? (selectedTask.valued ? 'Valued' : 'Non-Valued') : '';
         }
 
         function generateReport() {
@@ -253,8 +208,7 @@
             teamMembers.forEach(member => {
                 talentDistribution[member.talentRating] = (talentDistribution[member.talentRating] || 0) + 1;
             });
-            reportContainer.innerHTML += '<h3>1. Talent Distribution Report</h3>';
-            reportContainer.innerHTML += `<canvas id="talentDistributionChart"></canvas>`;
+            reportContainer.innerHTML += '<div class="chart-container"><canvas id="talentDistributionChart"></canvas></div>';
             new Chart(document.getElementById('talentDistributionChart'), {
                 type: 'pie',
                 data: {
@@ -278,12 +232,11 @@
 
             // 2. Valued vs non-valued task distribution
             const taskDistribution = { valued: 0, nonValued: 0 };
-            document.querySelectorAll('.task-value').forEach(select => {
-                if (select.value === 'valued') taskDistribution.valued++;
-                else taskDistribution.nonValued++;
+            document.querySelectorAll('.task-value').forEach(input => {
+                if (input.value === 'Valued') taskDistribution.valued++;
+                else if (input.value === 'Non-Valued') taskDistribution.nonValued++;
             });
-            reportContainer.innerHTML += '<h3>2. Valued vs Non-valued Task Distribution</h3>';
-            reportContainer.innerHTML += `<canvas id="taskDistributionChart"></canvas>`;
+            reportContainer.innerHTML += '<div class="chart-container"><canvas id="taskDistributionChart"></canvas></div>';
             new Chart(document.getElementById('taskDistributionChart'), {
                 type: 'pie',
                 data: {
@@ -302,70 +255,55 @@
                 }
             });
 
-            // 3. Proficiency level distribution
-            const proficiencyDistribution = {};
-            document.querySelectorAll('.proficiency-level').forEach(select => {
-                if (!select.disabled) {
-                    proficiencyDistribution[select.value] = (proficiencyDistribution[select.value] || 0) + 1;
-                }
-            });
-            reportContainer.innerHTML += '<h3>3. Proficiency Level Distribution</h3>';
-            reportContainer.innerHTML += `<canvas id="proficiencyDistributionChart"></canvas>`;
-            new Chart(document.getElementById('proficiencyDistributionChart'), {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(proficiencyDistribution),
-                    datasets: [{
-                        label: 'Proficiency Level',
-                        data: Object.values(proficiencyDistribution),
-                        backgroundColor: '#4BC0C0'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Proficiency Level Distribution'
+            // 3. Time spent distribution
+            const timeSpentData = {
+                labels: [],
+                valuedData: [],
+                nonValuedData: []
+            };
+            document.querySelectorAll('.task-row').forEach(row => {
+                const taskName = row.querySelector('.task-name').value;
+                const taskValue = row.querySelector('.task-value').value;
+                const timeSpent = parseFloat(row.querySelector('.time-spent').value) || 0;
+                
+                if (taskName && taskValue) {
+                    timeSpentData.labels.push(taskName);
+                    if (taskValue === 'Valued') {
+                        timeSpentData.valuedData.push(timeSpent);
+                        timeSpentData.nonValuedData.push(0);
+                    } else {
+                        timeSpentData.valuedData.push(0);
+                        timeSpentData.nonValuedData.push(timeSpent);
                     }
                 }
             });
-
-            // 4. Skills required distribution
-            const skillsDistribution = {};
-            document.querySelectorAll('.skills-required').forEach(input => {
-                if (input.value !== 'N/A') {
-                    input.value.split(', ').forEach(skill => {
-                        skillsDistribution[skill] = (skillsDistribution[skill] || 0) + 1;
-                    });
-                }
-            });
-            reportContainer.innerHTML += '<h3>4. Skills Required Distribution</h3>';
-            reportContainer.innerHTML += `<canvas id="skillsDistributionChart"></canvas>`;
-            new Chart(document.getElementById('skillsDistributionChart'), {
-                type: 'horizontalBar',
+            reportContainer.innerHTML += '<div class="chart-container"><canvas id="timeSpentChart"></canvas></div>';
+            new Chart(document.getElementById('timeSpentChart'), {
+                type: 'bar',
                 data: {
-                    labels: Object.keys(skillsDistribution),
-                    datasets: [{
-                        label: 'Skills Required',
-                        data: Object.values(skillsDistribution),
-                        backgroundColor: '#9966FF'
-                    }]
+                    labels: timeSpentData.labels,
+                    datasets: [
+                        {
+                            label: 'Valued Tasks',
+                            data: timeSpentData.valuedData,
+                            backgroundColor: '#36A2EB'
+                        },
+                        {
+                            label: 'Non-Valued Tasks',
+                            data: timeSpentData.nonValuedData,
+                            backgroundColor: '#FF6384'
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     scales: {
-                        x: {
-                            beginAtZero: true
-                        }
+                        x: { stacked: true },
+                        y: { stacked: true }
                     },
                     title: {
                         display: true,
-                        text: 'Skills Required Distribution'
+                        text: 'Time Spent Distribution'
                     }
                 }
             });
