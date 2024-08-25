@@ -39,9 +39,6 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        button.add-member {
-            background-color: #28a745;
-        }
         button:hover {
             opacity: 0.8;
         }
@@ -89,11 +86,6 @@
     <div class="container">
         <h1>Welcome to SkillsSync360</h1>
         
-        <h2>Team Dashboard</h2>
-        <input type="text" id="teamName" placeholder="Team Name">
-        <input type="number" id="teamSize" placeholder="Team Size">
-        <input type="text" id="teamLeader" placeholder="Team Leader">
-        
         <h2>Add Team Member</h2>
         <input type="text" id="memberName" placeholder="Name">
         <select id="memberJob">
@@ -112,7 +104,7 @@
             <option value="8">8 - High Performer</option>
             <option value="9">9 - Top Talent/Star</option>
         </select>
-        <button onclick="addTeamMember()" class="add-member">Add Team Member</button>
+        <button onclick="addTeamMember()">Add Team Member</button>
         
         <h2>Team Members</h2>
         <table id="teamMembersTable">
@@ -128,13 +120,18 @@
         </table>
         
         <h2>Task Analysis</h2>
-        <div id="taskAnalysis" style="display: none;">
-            <h3>Task Analysis for <span id="selectedEmployeeName"></span></h3>
-            <div id="taskContainer"></div>
-            <button onclick="addTaskRow()">Add Task</button>
+        <div id="taskAnalysis">
+            <div class="task-row">
+                <select id="taskSelect">
+                    <option value="">Select a Task</option>
+                    <!-- Task options will be populated dynamically -->
+                </select>
+                <input type="text" id="taskValue" readonly>
+                <input type="number" id="timeSpent" placeholder="% Time Spent">
+            </div>
+            <button onclick="addTask()">Add Task</button>
+            <button onclick="generateReport()">Generate Report</button>
         </div>
-        
-        <button onclick="generateReport()">Generate Report</button>
         
         <div id="reportContainer"></div>
     </div>
@@ -144,28 +141,36 @@
         let selectedEmployee = null;
 
         const tasks = [
-            "Develop project plans and timelines",
-            "Coordinate with cross-functional teams",
-            "Monitor project budgets",
-            "Identify cost-saving opportunities",
-            "Identify and mitigate project risks",
-            "Provide regular stakeholder updates",
-            "Manage stakeholder expectations",
-            "Allocate resources effectively",
-            "Conduct quality assurance checks",
-            "Coordinate with vendors and suppliers",
-            "Negotiate contracts with vendors",
-            "Resolve project issues promptly",
-            "Analyze project performance for improvements",
-            "Attend excessive meetings",
-            "Perform manual data entry",
-            "Micromanage team members",
-            "Handle routine administrative tasks",
-            "Wait for unnecessary approvals",
-            "Provide excessive status updates",
-            "Create redundant documentation",
-            "Manage non-critical emails"
+            { name: "Develop project plans and timelines", valued: true },
+            { name: "Coordinate with cross-functional teams", valued: true },
+            { name: "Monitor project budgets", valued: true },
+            { name: "Identify cost-saving opportunities", valued: true },
+            { name: "Identify and mitigate project risks", valued: true },
+            { name: "Provide regular stakeholder updates", valued: true },
+            { name: "Manage stakeholder expectations", valued: true },
+            { name: "Allocate resources effectively", valued: true },
+            { name: "Conduct quality assurance checks", valued: true },
+            { name: "Coordinate with vendors and suppliers", valued: true },
+            { name: "Negotiate contracts with vendors", valued: true },
+            { name: "Resolve project issues promptly", valued: true },
+            { name: "Analyze project performance for improvements", valued: true },
+            { name: "Attend excessive meetings", valued: false },
+            { name: "Perform manual data entry", valued: false },
+            { name: "Micromanage team members", valued: false },
+            { name: "Handle routine administrative tasks", valued: false },
+            { name: "Wait for unnecessary approvals", valued: false },
+            { name: "Provide excessive status updates", valued: false },
+            { name: "Create redundant documentation", valued: false },
+            { name: "Manage non-critical emails", valued: false }
         ];
+
+        function populateTaskSelect() {
+            const taskSelect = document.getElementById('taskSelect');
+            taskSelect.innerHTML = '<option value="">Select a Task</option>';
+            tasks.forEach(task => {
+                taskSelect.innerHTML += `<option value="${task.name}">${task.name}</option>`;
+            });
+        }
 
         function addTeamMember() {
             const name = document.getElementById('memberName').value;
@@ -205,9 +210,9 @@
             selectedEmployee = teamMembers[index];
             document.querySelectorAll('.employee-row').forEach(row => row.classList.remove('selected-employee'));
             document.querySelectorAll('.employee-row')[index].classList.add('selected-employee');
-            document.getElementById('selectedEmployeeName').textContent = selectedEmployee.name;
-            document.getElementById('taskAnalysis').style.display = 'block';
-            updateTaskContainer();
+            document.getElementById('taskSelect').value = '';
+            document.getElementById('taskValue').value = '';
+            document.getElementById('timeSpent').value = '';
         }
 
         function deleteTeamMember(index) {
@@ -221,40 +226,34 @@
             document.getElementById('talentRating').value = '1';
         }
 
-        function addTaskRow() {
+        function addTask() {
             if (!selectedEmployee) {
                 alert('Please select an employee first');
                 return;
             }
-            selectedEmployee.tasks.push({ name: '', valued: true, proficiency: 1 });
-            updateTaskContainer();
+            const taskName = document.getElementById('taskSelect').value;
+            const timeSpent = document.getElementById('timeSpent').value;
+            
+            if (taskName && timeSpent) {
+                const taskObj = tasks.find(t => t.name === taskName);
+                selectedEmployee.tasks.push({
+                    name: taskName,
+                    valued: taskObj.valued,
+                    timeSpent: parseFloat(timeSpent)
+                });
+                document.getElementById('taskSelect').value = '';
+                document.getElementById('taskValue').value = '';
+                document.getElementById('timeSpent').value = '';
+            } else {
+                alert('Please select a task and enter time spent');
+            }
         }
 
-        function updateTaskContainer() {
-            const container = document.getElementById('taskContainer');
-            container.innerHTML = '';
-            selectedEmployee.tasks.forEach((task, index) => {
-                const row = document.createElement('div');
-                row.className = 'task-row';
-                row.innerHTML = `
-                    <select onchange="updateTask(${index}, 'name', this.value)">
-                        <option value="">Select a task</option>
-                        ${tasks.map(t => `<option value="${t}" ${task.name === t ? 'selected' : ''}>${t}</option>`).join('')}
-                    </select>
-                    <select onchange="updateTask(${index}, 'valued', this.value === 'true')">
-                        <option value="true" ${task.valued ? 'selected' : ''}>Valued</option>
-                        <option value="false" ${!task.valued ? 'selected' : ''}>Non-Valued</option>
-                    </select>
-                    <select onchange="updateTask(${index}, 'proficiency', parseInt(this.value))">
-                        ${[1, 2, 3, 4, 5, 6].map(p => `<option value="${p}" ${task.proficiency === p ? 'selected' : ''}>${p}</option>`).join('')}
-                    </select>
-                `;
-                container.appendChild(row);
-            });
-        }
-
-        function updateTask(index, property, value) {
-            selectedEmployee.tasks[index][property] = value;
+        function updateTaskValue() {
+            const taskSelect = document.getElementById('taskSelect');
+            const taskValue = document.getElementById('taskValue');
+            const selectedTask = tasks.find(t => t.name === taskSelect.value);
+            taskValue.value = selectedTask ? (selectedTask.valued ? 'Valued' : 'Non-Valued') : '';
         }
 
         function generateReport() {
@@ -262,11 +261,14 @@
             // ... (previous report generation code)
         }
 
+        // Initialize
+        populateTaskSelect();
+        document.getElementById('taskSelect').addEventListener('change', updateTaskValue);
+
         // Initialize with some sample data
         teamMembers.push(
             { name: "Mike", job: "IT/Telco Project Manager", talentRating: "4", tasks: [] },
-            { name: "Bec", job: "IT/Telco Project Manager", talentRating: "6", tasks: [] },
-            { name: "John", job: "IT/Telco Project Manager", talentRating: "7", tasks: [] }
+            { name: "Bec", job: "IT/Telco Project Manager", talentRating: "5", tasks: [] }
         );
         updateTeamMembersTable();
     </script>
