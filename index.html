@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkillsSync360</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    
     <style>
         :root {
             --primary-color: #007bff;
@@ -38,24 +37,9 @@
             gap: 20px;
         }
 
-        .header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .logo {
-            width: 200px;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-        }
-
-        .header h1 {
+        h1, h2, h3 {
             color: var(--primary-color);
-            margin-top: 10px;
+            margin-bottom: 20px;
         }
 
         input, select, button {
@@ -99,7 +83,6 @@
 
         .task-row {
             display: flex;
-            flex-direction: column;
             margin-bottom: 15px;
             gap: 10px;
         }
@@ -128,18 +111,6 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px var(--shadow-color);
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: var(--secondary-color);
-        }
-
-        .footer a {
-            color: var(--primary-color);
-            text-decoration: none;
         }
 
         .tooltip {
@@ -179,54 +150,12 @@
             z-index: 1000;
             opacity: 0.9;
         }
-
-        .header-row {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .skills-header {
-            font-weight: bold;
-            margin-top: 20px;
-            color: var(--primary-color);
-        }
-
-        .chart-header {
-            text-align: center;
-            margin-top: 20px;
-            font-weight: bold;
-        }
-
-        .legend {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 10px;
-        }
-
-        .legend-item {
-            margin-right: 15px;
-            display: flex;
-            align-items: center;
-        }
-
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            background-color: var(--primary-color);
-            display: inline-block;
-            margin-right: 5px;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header with Logo and Title -->
-        <div class="header">
-            <img src="Training CULTURE PNG.png" alt="Training Culture Logo" class="logo">
-            <h1>Welcome to SkillsSync360</h1>
-        </div>
+        <h1>Welcome to SkillsSync360</h1>
         
-        <!-- Your remaining HTML content goes here -->
         <div class="section">
             <h2>Team Dashboard</h2>
             <input type="text" id="teamName" placeholder="Team Name">
@@ -292,106 +221,203 @@
             </div>
         </div>
         
-        <!-- Report Generation Button -->
         <button onclick="generateReport()">Generate Report</button>
         
         <div id="reportContainer" class="section"></div>
-
-        <!-- Footer -->
-        <div class="footer">
-            &copy; 2024 Training Culture. All rights reserved. <br>
-            Designed and developed by [Your Name or Company].
-        </div>
     </div>
 
     <!-- Place script at the end of the body -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Your JavaScript code goes here
-        
+    (function() {
+        // JavaScript functions and variables
         const teamMembers = [];
         let selectedEmployee = null;
+        let teamInfo = {};
+
+        const tasks = [
+            { name: "Develop project plans and timelines", valued: true },
+            { name: "Coordinate with cross-functional teams", valued: true },
+            { name: "Monitor project budgets", valued: true },
+            { name: "Identify cost-saving opportunities", valued: true },
+            { name: "Identify and mitigate project risks", valued: true },
+            { name: "Provide regular stakeholder updates", valued: true },
+            { name: "Manage stakeholder expectations", valued: true },
+            { name: "Allocate resources effectively", valued: true },
+            { name: "Conduct quality assurance checks", valued: true },
+            { name: "Coordinate with vendors and suppliers", valued: true },
+            { name: "Negotiate contracts with vendors", valued: true },
+            { name: "Resolve project issues promptly", valued: true },
+            { name: "Analyze project performance for improvements", valued: true },
+            { name: "Attend excessive meetings", valued: false },
+            { name: "Perform manual data entry", valued: false },
+            { name: "Micromanage team members", valued: false },
+            { name: "Handle routine administrative tasks", valued: false },
+            { name: "Wait for unnecessary approvals", valued: false },
+            { name: "Provide excessive status updates", valued: false },
+            { name: "Create redundant documentation", valued: false },
+            { name: "Manage non-critical emails", valued: false }
+        ];
 
         function saveTeamInfo() {
-            const teamName = document.getElementById("teamName").value;
-            const teamSize = document.getElementById("teamSize").value;
-            const teamLead = document.getElementById("teamLead").value;
+            teamInfo.name = document.getElementById('teamName').value;
+            teamInfo.size = document.getElementById('teamSize').value;
+            teamInfo.lead = document.getElementById('teamLead').value;
+            showNotification('Team information saved successfully!', 'success');
+        }
 
-            alert(`Team Info Saved: ${teamName}, ${teamSize}, ${teamLead}`);
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.backgroundColor = type === 'success' ? 'var(--success-color)' : 'var(--danger-color)';
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        function populateTaskSelect() {
+            const taskSelect = document.getElementById('taskSelect');
+            taskSelect.innerHTML = '<option value="">Select a Task</option>';
+            tasks.forEach(task => {
+                taskSelect.innerHTML += `<option value="${task.name}">${task.name}</option>`;
+            });
         }
 
         function addTeamMember() {
-            const memberName = document.getElementById("memberName").value;
-            const memberJob = document.getElementById("memberJob").value;
-            const talentRating = document.getElementById("talentRating").value;
-
-            if (memberName && memberJob && talentRating) {
-                const newMember = { name: memberName, job: memberJob, talentRating: talentRating };
+            const name = document.getElementById('memberName').value;
+            const job = document.getElementById('memberJob').value;
+            const talentRating = document.getElementById('talentRating').value;
+            
+            if (name && job && talentRating) {
+                const newMember = { name, job, talentRating, tasks: [] };
                 teamMembers.push(newMember);
                 updateTeamMembersTable();
+                clearTeamMemberInputs();
+                showNotification('Team member added successfully!', 'success');
             } else {
-                alert("Please fill all fields to add a team member.");
+                showNotification('Please fill in all fields', 'error');
             }
         }
 
         function updateTeamMembersTable() {
-            const teamMembersBody = document.getElementById("teamMembersBody");
-            teamMembersBody.innerHTML = "";
-
+            const tbody = document.getElementById('teamMembersBody');
+            tbody.innerHTML = '';
             teamMembers.forEach((member, index) => {
-                const row = document.createElement("tr");
-                row.classList.add("employee-row");
-                row.innerHTML = `
-                    <td>${member.name}</td>
-                    <td>${member.job}</td>
-                    <td>${member.talentRating}</td>
-                    <td><button onclick="deleteTeamMember(${index})">Delete</button></td>
-                `;
-                row.addEventListener("click", () => selectEmployee(member));
-                teamMembersBody.appendChild(row);
+                const row = tbody.insertRow();
+                row.className = 'employee-row';
+                row.onclick = () => selectEmployee(index);
+                row.insertCell(0).textContent = member.name;
+                row.insertCell(1).textContent = member.job;
+                row.insertCell(2).textContent = member.talentRating;
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = (e) => {
+                    e.stopPropagation();
+                    deleteTeamMember(index);
+                };
+                row.insertCell(3).appendChild(deleteButton);
             });
+        }
+
+        function selectEmployee(index) {
+            selectedEmployee = teamMembers[index];
+            document.querySelectorAll('.employee-row').forEach(row => row.classList.remove('selected-employee'));
+            document.querySelectorAll('.employee-row')[index].classList.add('selected-employee');
+            document.getElementById('selectedEmployeeName').textContent = selectedEmployee.name;
+            document.getElementById('taskSelect').value = '';
+            document.getElementById('taskValue').value = '';
+            document.getElementById('timeSpent').value = '';
+            updateTaskList();
         }
 
         function deleteTeamMember(index) {
             teamMembers.splice(index, 1);
             updateTeamMembersTable();
+            if (selectedEmployee === teamMembers[index]) {
+                selectedEmployee = null;
+                document.getElementById('selectedEmployeeName').textContent = '';
+                document.getElementById('taskList').innerHTML = '';
+            }
+            showNotification('Team member deleted successfully!', 'success');
         }
 
-        function selectEmployee(member) {
-            selectedEmployee = member;
-            document.getElementById("selectedEmployeeName").textContent = member.name;
-            populateTaskOptions();
-        }
-
-        function populateTaskOptions() {
-            const taskSelect = document.getElementById("taskSelect");
-            taskSelect.innerHTML = `
-                <option value="">Select a Task</option>
-                <option value="Task1">Identify cost-saving opportunities</option>
-                <option value="Task2">Resolve project issues promptly</option>
-                <option value="Task3">Handle routine administrative tasks</option>
-                <option value="Task4">Identify and mitigate project risks</option>
-            `;
+        function clearTeamMemberInputs() {
+            document.getElementById('memberName').value = '';
+            document.getElementById('memberJob').value = '';
+            document.getElementById('talentRating').value = '1';
         }
 
         function addTask() {
-            const taskSelect = document.getElementById("taskSelect").value;
-            const taskValue = taskSelect.includes("Identify") ? "Valued" : "Non-Valued";
-            const timeSpent = document.getElementById("timeSpent").value;
-
-            if (selectedEmployee && taskSelect && timeSpent) {
-                document.getElementById("taskList").innerHTML += `
-                    ${taskSelect} - ${taskValue} - ${timeSpent}% - Proficiency: ${selectedEmployee.talentRating}
-                `;
+            if (!selectedEmployee) {
+                showNotification('Please select an employee first', 'error');
+                return;
+            }
+            const taskName = document.getElementById('taskSelect').value;
+            const timeSpent = document.getElementById('timeSpent').value;
+            
+            if (taskName && timeSpent) {
+                const taskObj = tasks.find(t => t.name === taskName);
+                selectedEmployee.tasks.push({
+                    name: taskName,
+                    valued: taskObj.valued,
+                    timeSpent: parseFloat(timeSpent)
+                });
+                document.getElementById('taskSelect').value = '';
+                document.getElementById('taskValue').value = '';
+                document.getElementById('timeSpent').value = '';
+                updateTaskList();
+                showNotification('Task added successfully!', 'success');
             } else {
-                alert("Please select an employee, task, and time spent.");
+                showNotification('Please select a task and enter time spent', 'error');
+            }
+        }
+
+        function updateTaskValue() {
+            const taskSelect = document.getElementById('taskSelect');
+            const taskValue = document.getElementById('taskValue');
+            const selectedTask = tasks.find(t => t.name === taskSelect.value);
+            taskValue.value = selectedTask ? (selectedTask.valued ? 'Valued' : 'Non-Valued') : '';
+        }
+
+        function updateTaskList() {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = '';
+            if (selectedEmployee) {
+                selectedEmployee.tasks.forEach((task, index) => {
+                    const taskDiv = document.createElement('div');
+                    taskDiv.textContent = `${task.name} - ${task.valued ? 'Valued' : 'Non-Valued'} - ${task.timeSpent}%`;
+                    taskList.appendChild(taskDiv);
+                });
             }
         }
 
         function generateReport() {
-            alert("Generating report...");
-            // Add report generation logic here
+            const reportContainer = document.getElementById('reportContainer');
+            reportContainer.innerHTML = '<h2>Generated Report</h2>';
+
+            // Team Information
+            reportContainer.innerHTML += `
+                <h3>Team Information</h3>
+                <p>Team Name: ${teamInfo.name || 'Not set'}</p>
+                <p>Team Size: ${teamInfo.size || 'Not set'}</p>
+                <p>Team Lead: ${teamInfo.lead || 'Not set'}</p>
+            `;
+
+            // Additional report generation code to be added for charts and data analysis
         }
+
+        // Attach functions to window object to make them accessible globally
+        window.saveTeamInfo = saveTeamInfo;
+        window.addTeamMember = addTeamMember;
+        window.addTask = addTask;
+        window.generateReport = generateReport;
+
+        // Initialize the page once DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            populateTaskSelect();
+            document.getElementById('taskSelect').addEventListener('change', updateTaskValue);
+        });
+    })();
     </script>
 </body>
 </html>
