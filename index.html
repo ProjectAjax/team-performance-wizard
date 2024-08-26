@@ -47,7 +47,7 @@
         }
 
         .logo {
-            width: 300px;  /* Adjust the width as needed */
+            width: 200px;  /* Adjust the width as needed */
             height: auto;  /* Keeps the aspect ratio */
             display: block; /* Makes sure it's treated as a block element */
             margin: 0 auto; /* Centers the logo horizontally */
@@ -226,7 +226,7 @@
             <h1>Welcome to SkillsSync360</h1>
         </div>
         
-        <!-- Your remaining HTML content goes here -->
+        <!-- Team Dashboard Section -->
         <div class="section">
             <h2>Team Dashboard</h2>
             <input type="text" id="teamName" placeholder="Team Name">
@@ -235,6 +235,7 @@
             <button onclick="saveTeamInfo()">Save Team Info</button>
         </div>
         
+        <!-- Add Team Member Section -->
         <div class="section">
             <h2>Add Team Member</h2>
             <input type="text" id="memberName" placeholder="Name">
@@ -255,11 +256,12 @@
                     <option value="8">8 - High Performer</option>
                     <option value="9">9 - Top Talent/Star</option>
                 </select>
-                <span class="tooltiptext">1: Underperformer - Needs improvement, 2: Inconsistent Performer - Occasionally meets expectations, 3: Emerging Talent - Meets expectations with potential, 4: Steady Contributor - Consistently meets expectations, 5: Key Contributor - Frequently exceeds expectations, 6: Future Star - Potential for leadership, 7: Solid Performer - Strong in most areas, 8: High Performer - Outstanding, 9: Top Talent/Star - Exceptional</span>
+                <span class="tooltiptext">Hover for talent rating descriptions</span>
             </div>
             <button onclick="addTeamMember()">Add Team Member</button>
         </div>
         
+        <!-- Team Members Table -->
         <div class="section">
             <h2>Team Members</h2>
             <table id="teamMembersTable">
@@ -275,6 +277,7 @@
             </table>
         </div>
         
+        <!-- Task Analysis Section -->
         <div class="section">
             <h2>Task Analysis</h2>
             <div id="taskAnalysis">
@@ -303,22 +306,22 @@
         </div>
     </div>
 
-    <!-- Place script at the end of the body -->
+    <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // JavaScript functions to handle form submissions and dynamic content
-        const teamMembers = [];
-
+        // JavaScript functions go here
         function saveTeamInfo() {
             const teamName = document.getElementById('teamName').value;
             const teamSize = document.getElementById('teamSize').value;
             const teamLead = document.getElementById('teamLead').value;
 
-            if (teamName && teamSize && teamLead) {
-                alert(`Team Info Saved!\nName: ${teamName}, Size: ${teamSize}, Lead: ${teamLead}`);
-            } else {
-                alert('Please fill all fields to save team info.');
+            if (!teamName || !teamSize || !teamLead) {
+                alert("Please fill out all fields in the Team Dashboard.");
+                return;
             }
+
+            console.log(`Team Name: ${teamName}, Team Size: ${teamSize}, Team Lead: ${teamLead}`);
+            alert("Team information saved successfully!");
         }
 
         function addTeamMember() {
@@ -326,61 +329,36 @@
             const memberJob = document.getElementById('memberJob').value;
             const talentRating = document.getElementById('talentRating').value;
 
-            if (memberName && memberJob && talentRating) {
-                teamMembers.push({ name: memberName, job: memberJob, rating: talentRating });
-                updateTeamMembersTable();
-            } else {
-                alert('Please fill all fields to add a team member.');
+            if (!memberName || !memberJob || !talentRating) {
+                alert("Please fill out all fields to add a team member.");
+                return;
             }
+
+            const tableBody = document.getElementById('teamMembersBody');
+            const newRow = tableBody.insertRow();
+
+            const nameCell = newRow.insertCell(0);
+            const jobCell = newRow.insertCell(1);
+            const ratingCell = newRow.insertCell(2);
+            const actionCell = newRow.insertCell(3);
+
+            nameCell.textContent = memberName;
+            jobCell.textContent = memberJob;
+            ratingCell.textContent = talentRating;
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = "Delete";
+            deleteButton.onclick = () => {
+                tableBody.deleteRow(newRow.rowIndex - 1);
+            };
+            actionCell.appendChild(deleteButton);
+
+            document.getElementById('memberName').value = '';
+            document.getElementById('memberJob').value = '';
+            document.getElementById('talentRating').value = '';
         }
 
-        function updateTeamMembersTable() {
-            const tbody = document.getElementById('teamMembersBody');
-            tbody.innerHTML = '';
-
-            teamMembers.forEach((member, index) => {
-                const row = document.createElement('tr');
-
-                const nameCell = document.createElement('td');
-                nameCell.textContent = member.name;
-                row.appendChild(nameCell);
-
-                const jobCell = document.createElement('td');
-                jobCell.textContent = member.job;
-                row.appendChild(jobCell);
-
-                const ratingCell = document.createElement('td');
-                ratingCell.textContent = member.rating;
-                row.appendChild(ratingCell);
-
-                const actionCell = document.createElement('td');
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete';
-                deleteButton.onclick = () => deleteTeamMember(index);
-                actionCell.appendChild(deleteButton);
-                row.appendChild(actionCell);
-
-                tbody.appendChild(row);
-            });
-        }
-
-        function deleteTeamMember(index) {
-            teamMembers.splice(index, 1);
-            updateTeamMembersTable();
-        }
-
-        function addTask() {
-            const selectedEmployeeName = document.getElementById('selectedEmployeeName');
-            if (selectedEmployeeName) {
-                alert('Add Task functionality to be implemented.');
-            } else {
-                alert('Please select an employee to analyze tasks.');
-            }
-        }
-
-        function generateReport() {
-            alert('Generate Report functionality to be implemented.');
-        }
+        // Add other functions as needed
     </script>
 </body>
 </html>
