@@ -6,7 +6,6 @@
     <title>SkillsSync360</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     
-    <!-- Correct Style Block -->
     <style>
         :root {
             --primary-color: #007bff;
@@ -41,20 +40,22 @@
 
         .header {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center; /* Centers content horizontally */
+            justify-content: center;
             margin-bottom: 20px;
         }
 
         .logo {
-            width: 150px;  /* Adjust the width as needed */
+            width: 200px;  /* Adjust the width as needed */
             height: auto;  /* Keeps the aspect ratio */
-            max-width: 100%;  /* Ensures the image does not exceed its container */
+            display: block; /* Makes sure it's treated as a block element */
+            margin: 0 auto; /* Centers the logo horizontally */
         }
 
         .header h1 {
             color: var(--primary-color);
-            margin-left: 20px; /* Adds some space between the logo and the title */
+            margin-top: 10px; /* Adds space between the logo and the title */
         }
 
         input, select, button {
@@ -222,7 +223,7 @@
         <!-- Header with Logo and Title -->
         <div class="header">
             <img src="Training CULTURE PNG.png" alt="Training Culture Logo" class="logo">
-            <h1>SkillsSync360</h1>
+            <h1>Welcome to SkillsSync360</h1>
         </div>
         
         <!-- Your remaining HTML content goes here -->
@@ -297,7 +298,8 @@
 
         <!-- Footer -->
         <div class="footer">
-            &copy; 2024 Training Culture. All rights reserved.
+            &copy; 2024 Training Culture. All rights reserved. <br>
+            Designed and developed by [Your Name or Company].
         </div>
     </div>
 
