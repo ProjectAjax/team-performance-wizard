@@ -1,479 +1,135 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillsSync360</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary-color: #007bff;
-            --secondary-color: #6c757d;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
-            --light-color: #ffffff;
-            --dark-color: #343a40;
-            --hover-color: #0056b3;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --neutral-color: #f0f0f0;
-        }
+<script>
+    const teamMembers = [];
+    const tasks = [
+        // ... (keep your existing tasks array)
+    ];
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: var(--neutral-color);
-            color: var(--dark-color);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: var(--light-color);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 20px var(--shadow-color);
-            display: grid;
-            gap: 20px;
-        }
-
-        .header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .logo {
-            width: 200px;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-        }
-
-        .header h1 {
-            color: var(--primary-color);
-            margin-top: 10px;
-        }
-
-        input, select, button {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-        }
-
-        button:hover {
-            background-color: var(--hover-color);
-            transform: scale(1.02);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-
-        th {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .task-row {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 15px;
-            gap: 10px;
-        }
-
-        .chart-container {
-            width: 100%;
-            max-width: 600px;
-            margin: 30px auto;
-        }
-
-        .employee-row {
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .employee-row:hover {
-            background-color: var(--neutral-color);
-        }
-
-        .selected-employee {
-            background-color: #e6f7ff;
-        }
-
-        .section {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px var(--shadow-color);
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: var(--secondary-color);
-        }
-
-        .footer a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        .tooltip {
-            position: relative;
-            display: inline-block;
-        }
-
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 200px;
-            background-color: #555;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -100px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 10px 20px;
-            border-radius: 4px;
-            color: white;
-            z-index: 1000;
-            opacity: 0.9;
-        }
-
-        .header-row {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .skills-header {
-            font-weight: bold;
-            margin-top: 20px;
-            color: var(--primary-color);
-        }
-
-        .chart-header {
-            text-align: center;
-            margin-top: 20px;
-            font-weight: bold;
-        }
-
-        .legend {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 10px;
-        }
-
-        .legend-item {
-            margin-right: 15px;
-            display: flex;
-            align-items: center;
-        }
-
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            background-color: var(--primary-color);
-            display: inline-block;
-            margin-right: 5px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Header with Logo and Title -->
-        <div class="header">
-            <img src="Training CULTURE PNG.png" alt="Training Culture Logo" class="logo">
-            <h1>Welcome to SkillsSync360</h1>
-        </div>
-        
-        <!-- Team Dashboard Section -->
-        <div class="section">
-            <h2>Team Dashboard</h2>
-            <input type="text" id="teamName" placeholder="Team Name">
-            <input type="number" id="teamSize" placeholder="Team Size">
-            <input type="text" id="teamLead" placeholder="Team Lead">
-            <button onclick="saveTeamInfo()">Save Team Info</button>
-        </div>
-        
-        <!-- Add Team Member Section -->
-        <div class="section">
-            <h2>Add Team Member</h2>
-            <input type="text" id="memberName" placeholder="Name">
-            <select id="memberJob">
-                <option value="">Select Job</option>
-                <option value="IT/Telco Project Manager">IT/Telco Project Manager</option>
-                <!-- Add more job options as needed -->
-            </select>
-            <div class="tooltip">
-                <select id="talentRating">
-                    <option value="1">1 - Underperformer</option>
-                    <option value="2">2 - Inconsistent Performer</option>
-                    <option value="3">3 - Emerging Talent</option>
-                    <option value="4">4 - Steady Contributor</option>
-                    <option value="5">5 - Key Contributor</option>
-                    <option value="6">6 - Future Star</option>
-                    <option value="7">7 - Solid Performer</option>
-                    <option value="8">8 - High Performer</option>
-                    <option value="9">9 - Top Talent/Star</option>
-                </select>
-                <span class="tooltiptext">Talent rating from 1 (Underperformer) to 9 (Top Talent/Star)</span>
-            </div>
-            <button onclick="addTeamMember()">Add Team Member</button>
-        </div>
-        
-        <!-- Team Members Table Section -->
-        <div class="section">
-            <h2>Team Members</h2>
-            <table id="teamMembersTable">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Job</th>
-                        <th>Talent Rating</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="teamMembersBody"></tbody>
-            </table>
-        </div>
-        
-        <!-- Task Analysis Section -->
-        <div class="section">
-            <h2>Task Analysis</h2>
-            <div id="taskAnalysis">
-                <h3>Task Analysis for <span id="selectedEmployeeName"></span></h3>
-                <div class="task-row">
-                    <select id="taskSelect">
-                        <option value="">Select a Task</option>
-                        <option value="Develop project plans and timelines">Develop project plans and timelines</option>
-                        <option value="Coordinate with cross-functional teams">Coordinate with cross-functional teams</option>
-                        <option value="Monitor project budgets">Monitor project budgets</option>
-                        <option value="Identify cost-saving opportunities">Identify cost-saving opportunities</option>
-                        <option value="Identify and mitigate project risks">Identify and mitigate project risks</option>
-                        <option value="Provide regular stakeholder updates">Provide regular stakeholder updates</option>
-                        <option value="Manage stakeholder expectations">Manage stakeholder expectations</option>
-                        <option value="Allocate resources effectively">Allocate resources effectively</option>
-                        <option value="Conduct quality assurance checks">Conduct quality assurance checks</option>
-                        <option value="Coordinate with vendors and suppliers">Coordinate with vendors and suppliers</option>
-                        <option value="Negotiate contracts with vendors">Negotiate contracts with vendors</option>
-                        <option value="Resolve project issues promptly">Resolve project issues promptly</option>
-                        <option value="Analyze project performance for improvements">Analyze project performance for improvements</option>
-                        <!-- Add more valued tasks dynamically if needed -->
-                    </select>
-                    <input type="text" id="taskValue" readonly>
-                    <input type="number" id="timeSpent" placeholder="% Time Spent">
-                </div>
-                <button onclick="addTask()">Add Task</button>
-                <div id="taskList"></div>
-            </div>
-        </div>
-
-        <!-- Proficiency Levels Section -->
-        <div class="section">
-            <h2>Proficiency Levels</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Level</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Novice</td>
-                        <td>Basic understanding and limited experience</td>
-                    </tr>
-                    <tr>
-                        <td>Intermediate</td>
-                        <td>Can perform tasks independently with moderate proficiency</td>
-                    </tr>
-                    <tr>
-                        <td>Proficient</td>
-                        <td>Good command of tasks with ability to handle more complex situations</td>
-                    </tr>
-                    <tr>
-                        <td>Advanced</td>
-                        <td>High level of expertise, can handle complex and critical tasks</td>
-                    </tr>
-                    <tr>
-                        <td>Expert</td>
-                        <td>Exceptional skills with ability to lead and mentor others</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        
-        <button onclick="generateReport()">Generate Report</button>
-        
-        <div id="reportContainer" class="section"></div>
-
-        <!-- Footer -->
-        <div class="footer">
-            &copy; 2024 Training Culture. All rights reserved. <br>
-            Designed and developed by [Your Name or Company].
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        let team = [];
-
-        function saveTeamInfo() {
-            const teamName = document.getElementById('teamName').value;
-            const teamSize = document.getElementById('teamSize').value;
-            const teamLead = document.getElementById('teamLead').value;
-            
-            if (!teamName || !teamSize || !teamLead) {
-                alert('Please fill out all team information fields.');
-                return;
-            }
-
-            document.getElementById('teamMembersTable').style.display = 'table';
-            console.log(`Saved team info: ${teamName}, ${teamSize}, ${teamLead}`);
-            alert('Team information saved successfully!');
-        }
-
-        function addTeamMember() {
-            const name = document.getElementById('memberName').value;
-            const job = document.getElementById('memberJob').value;
-            const rating = document.getElementById('talentRating').value;
-
-            if (!name || !job || !rating) {
-                alert('Please fill out all team member fields.');
-                return;
-            }
-
-            const newMember = { name, job, rating, tasks: [] };
-            team.push(newMember);
-            updateTeamTable();
-            resetTeamMemberForm();
-        }
-
-        function resetTeamMemberForm() {
+    window.addTeamMember = function() {
+        const name = document.getElementById('memberName').value;
+        const job = document.getElementById('memberJob').value;
+        const talentRating = document.getElementById('talentRating').value;
+        if (name && job && talentRating) {
+            const newMember = { name, job, talentRating, tasks: [] };
+            teamMembers.push(newMember);
+            updateEmployeeSelect();
             document.getElementById('memberName').value = '';
             document.getElementById('memberJob').value = '';
             document.getElementById('talentRating').value = '';
+            alert('Team member added successfully!');
+        } else {
+            alert('Please fill in all fields.');
         }
+    }
 
-        function updateTeamTable() {
-            const tbody = document.getElementById('teamMembersBody');
-            tbody.innerHTML = '';
+    function updateEmployeeSelect() {
+        const select = document.getElementById('employeeSelect');
+        select.innerHTML = '<option value="">Select an Employee</option>';
+        teamMembers.forEach((member, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = member.name;
+            select.appendChild(option);
+        });
+    }
 
-            team.forEach((member, index) => {
-                const row = document.createElement('tr');
-                row.classList.add('employee-row');
-                row.innerHTML = `
-                    <td>${member.name}</td>
-                    <td>${member.job}</td>
-                    <td>${member.rating}</td>
-                    <td><button onclick="deleteTeamMember(${index})">Delete</button></td>
-                `;
-                row.onclick = () => selectEmployeeForTaskAnalysis(member);
-                tbody.appendChild(row);
+    window.resetTaskInputs = function() {
+        document.getElementById('taskSelect').value = '';
+        document.getElementById('taskValue').value = '';
+        document.getElementById('timeSpent').value = '';
+        document.getElementById('proficiency').value = '';
+        updateTaskTable();
+    }
+
+    window.updateTaskValue = function() {
+        const taskSelect = document.getElementById('taskSelect');
+        const taskValue = document.getElementById('taskValue');
+        const selectedTask = tasks.find(t => t.name === taskSelect.value);
+        taskValue.value = selectedTask ? (selectedTask.valued ? 'Valued' : 'Non-Valued') : '';
+    }
+
+    window.addTask = function() {
+        const employeeIndex = document.getElementById('employeeSelect').value;
+        const taskName = document.getElementById('taskSelect').value;
+        const timeSpent = document.getElementById('timeSpent').value;
+        const proficiency = document.getElementById('proficiency').value;
+
+        if (employeeIndex && taskName && timeSpent && proficiency) {
+            const task = tasks.find(t => t.name === taskName);
+            teamMembers[employeeIndex].tasks.push({
+                ...task,
+                timeSpent: parseFloat(timeSpent),
+                proficiency: parseInt(proficiency)
+            });
+            updateTaskTable();
+            resetTaskInputs();
+        } else {
+            alert('Please fill in all task details.');
+        }
+    }
+
+    function updateTaskTable() {
+        const employeeIndex = document.getElementById('employeeSelect').value;
+        const tableBody = document.getElementById('taskTableBody');
+        tableBody.innerHTML = '';
+        if (employeeIndex !== "") {
+            teamMembers[employeeIndex].tasks.forEach((task, index) => {
+                const row = tableBody.insertRow();
+                row.className = task.valued ? 'valued' : 'non-valued';
+                row.insertCell(0).textContent = task.name;
+                row.insertCell(1).textContent = task.valued ? 'Valued' : 'Non-Valued';
+                row.insertCell(2).textContent = task.timeSpent + '%';
+                row.insertCell(3).textContent = getProficiencyLabel(task.proficiency);
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = () => deleteTask(employeeIndex, index);
+                row.insertCell(4).appendChild(deleteButton);
             });
         }
+    }
 
-        function deleteTeamMember(index) {
-            team.splice(index, 1);
-            updateTeamTable();
-        }
+    function getProficiencyLabel(proficiency) {
+        const labels = ['Novice', 'Advanced Beginner', 'Competent', 'Proficient', 'Expert'];
+        return labels[proficiency - 1] || '';
+    }
 
-        function selectEmployeeForTaskAnalysis(member) {
-            document.getElementById('selectedEmployeeName').innerText = member.name;
-            const taskList = document.getElementById('taskList');
-            taskList.innerHTML = '';
-            member.tasks.forEach((task) => {
-                const taskItem = document.createElement('div');
-                taskItem.textContent = `${task.taskName} - ${task.timeSpent}%`;
-                taskList.appendChild(taskItem);
-            });
-        }
+    function deleteTask(employeeIndex, taskIndex) {
+        teamMembers[employeeIndex].tasks.splice(taskIndex, 1);
+        updateTaskTable();
+    }
 
-        function addTask() {
-            const selectedEmployeeName = document.getElementById('selectedEmployeeName').innerText;
-            const selectedEmployee = team.find(member => member.name === selectedEmployeeName);
+    window.generateReport = function() {
+        // ... (keep your existing generateReport function)
+    }
 
-            if (!selectedEmployee) {
-                alert('Please select a team member to assign tasks.');
-                return;
-            }
+    function generateTalentDistributionChart() {
+        // ... (keep your existing chart generation functions)
+    }
 
-            const taskName = document.getElementById('taskSelect').value;
-            const taskValue = document.getElementById('taskValue').value;
-            const timeSpent = document.getElementById('timeSpent').value;
+    function generateTaskValueDistributionChart() {
+        // ... (keep your existing chart generation functions)
+    }
 
-            if (!taskName || !timeSpent) {
-                alert('Please select a task and specify the time spent.');
-                return;
-            }
+    function generateSkillsRadarChart() {
+        // ... (keep your existing chart generation functions)
+    }
 
-            const task = { taskName, taskValue, timeSpent };
-            selectedEmployee.tasks.push(task);
-            console.log(`Added task for ${selectedEmployee.name}: ${taskName}, ${timeSpent}%`);
-        }
+    function getTalentLabel(rating) {
+        const labels = ['Underperformer', 'Inconsistent Performer', 'Emerging Talent', 'Steady Contributor', 'Key Contributor', 'Future Star', 'Solid Performer', 'High Performer', 'Top Talent/Star'];
+        return labels[rating - 1] || '';
+    }
 
-        function generateReport() {
-            const reportContainer = document.getElementById('reportContainer');
-            reportContainer.innerHTML = '';
+    function generateLeadershipInsights() {
+        // ... (implement this function to provide leadership insights)
+    }
 
-            team.forEach(member => {
-                const memberReport = document.createElement('div');
-                memberReport.classList.add('section');
-                memberReport.innerHTML = `
-                    <h3>${member.name} - ${member.job}</h3>
-                    <p>Talent Rating: ${member.rating}</p>
-                    <p>Tasks:</p>
-                    <ul>
-                        ${member.tasks.map(task => `<li>${task.taskName}: ${task.timeSpent}%</li>`).join('')}
-                    </ul>
-                `;
-                reportContainer.appendChild(memberReport);
-            });
-
-            console.log('Generating report...');
-        }
-    </script>
-</body>
-</html>
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        const taskSelect = document.getElementById('taskSelect');
+        tasks.forEach(task => {
+            const option = document.createElement('option');
+            option.value = task.name;
+            option.textContent = task.name;
+            taskSelect.appendChild(option);
+        });
+    });
+</script>
