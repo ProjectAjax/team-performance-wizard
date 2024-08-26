@@ -156,6 +156,12 @@
             font-weight: bold;
             margin-bottom: 10px;
         }
+
+        .skills-header {
+            font-weight: bold;
+            margin-top: 20px;
+            color: var(--primary-color);
+        }
     </style>
 </head>
 <body>
@@ -233,6 +239,9 @@
                 </select>
                 <button onclick="addTask()">Add Task</button>
                 <div id="taskList"></div>
+                <!-- Add Skills Header -->
+                <div class="skills-header">Skills to Focus On</div>
+                <div id="skillsList"></div>
             </div>
         </div>
         
@@ -364,6 +373,7 @@
                 selectedEmployee = null;
                 document.getElementById('selectedEmployeeName').textContent = '';
                 document.getElementById('taskList').innerHTML = '';
+                document.getElementById('skillsList').innerHTML = '';
             }
             showNotification('Team member deleted successfully!', 'success');
         }
@@ -397,6 +407,7 @@
                 document.getElementById('timeSpent').value = '';
                 document.getElementById('skillProficiency').value = '1';
                 updateTaskList();
+                updateSkillsList();
                 showNotification('Task added successfully!', 'success');
             } else {
                 showNotification('Please select a task, enter time spent, and proficiency level', 'error');
@@ -418,6 +429,19 @@
                     const taskDiv = document.createElement('div');
                     taskDiv.textContent = `${task.name} - ${task.valued ? 'Valued' : 'Non-Valued'} - ${task.timeSpent}% - Proficiency: ${task.proficiency} - Skill: ${task.skill}`;
                     taskList.appendChild(taskDiv);
+                });
+            }
+        }
+
+        function updateSkillsList() {
+            const skillsList = document.getElementById('skillsList');
+            skillsList.innerHTML = '';
+            if (selectedEmployee) {
+                const skills = new Set(selectedEmployee.tasks.map(task => task.skill));
+                skills.forEach(skill => {
+                    const skillDiv = document.createElement('div');
+                    skillDiv.textContent = skill;
+                    skillsList.appendChild(skillDiv);
                 });
             }
         }
