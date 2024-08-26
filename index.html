@@ -226,11 +226,11 @@
         <div id="reportContainer" class="section"></div>
     </div>
 
-    <!-- Move your script here -->
+    <!-- Place script at the end of the body -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
     (function() {
-        // Your existing JavaScript functions here
+        // JavaScript functions and variables
         const teamMembers = [];
         let selectedEmployee = null;
         let teamInfo = {};
@@ -270,22 +270,9 @@
             const notification = document.createElement('div');
             notification.className = 'notification';
             notification.textContent = message;
-
-            switch(type) {
-                case 'success':
-                    notification.style.backgroundColor = 'var(--success-color)';
-                    break;
-                case 'error':
-                    notification.style.backgroundColor = 'var(--danger-color)';
-                    break;
-                default:
-                    notification.style.backgroundColor = 'var(--primary-color)';
-            }
-
+            notification.style.backgroundColor = type === 'success' ? 'var(--success-color)' : 'var(--danger-color)';
             document.body.appendChild(notification);
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
+            setTimeout(() => notification.remove(), 3000);
         }
 
         function populateTaskSelect() {
@@ -419,13 +406,13 @@
             // Additional report generation code to be added for charts and data analysis
         }
 
-        // Attach functions to window object to make them accessible
+        // Attach functions to window object to make them accessible globally
         window.saveTeamInfo = saveTeamInfo;
         window.addTeamMember = addTeamMember;
         window.addTask = addTask;
         window.generateReport = generateReport;
 
-        // Initialize the page
+        // Initialize the page once DOM is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
             populateTaskSelect();
             document.getElementById('taskSelect').addEventListener('change', updateTaskValue);
