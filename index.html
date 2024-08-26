@@ -150,6 +150,11 @@
             z-index: 1000;
             opacity: 0.9;
         }
+
+        .header-row {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -208,21 +213,23 @@
             <h2>Task Analysis</h2>
             <div id="taskAnalysis">
                 <h3>Task Analysis for <span id="selectedEmployeeName"></span></h3>
-                <div class="task-row">
-                    <select id="taskSelect">
-                        <option value="">Select a Task</option>
-                        <!-- Task options will be populated dynamically -->
-                    </select>
-                    <input type="text" id="taskValue" readonly>
-                    <input type="number" id="timeSpent" placeholder="% Time Spent">
-                    <select id="skillProficiency">
-                        <option value="1">1 - Beginner</option>
-                        <option value="2">2 - Novice</option>
-                        <option value="3">3 - Competent</option>
-                        <option value="4">4 - Proficient</option>
-                        <option value="5">5 - Expert</option>
-                    </select>
-                </div>
+                <div class="header-row">Task</div>
+                <select id="taskSelect">
+                    <option value="">Select a Task</option>
+                    <!-- Task options will be populated dynamically -->
+                </select>
+                <div class="header-row">Value</div>
+                <input type="text" id="taskValue" readonly>
+                <div class="header-row">% Time Spent</div>
+                <input type="number" id="timeSpent" placeholder="% Time Spent">
+                <div class="header-row">Proficiency Rating</div>
+                <select id="skillProficiency">
+                    <option value="1">1 - Beginner</option>
+                    <option value="2">2 - Novice</option>
+                    <option value="3">3 - Competent</option>
+                    <option value="4">4 - Proficient</option>
+                    <option value="5">5 - Expert</option>
+                </select>
                 <button onclick="addTask()">Add Task</button>
                 <div id="taskList"></div>
             </div>
@@ -345,6 +352,7 @@
             document.getElementById('taskSelect').value = '';
             document.getElementById('taskValue').value = '';
             document.getElementById('timeSpent').value = '';
+            document.getElementById('skillProficiency').value = '1';
             updateTaskList();
         }
 
