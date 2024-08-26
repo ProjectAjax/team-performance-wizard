@@ -235,8 +235,21 @@
             <h2>Valued Tasks</h2>
             <div id="valuedTasks">
                 <ul>
-                    <!-- Example tasks here -->
-                    <li>Task example - Skills: Example Skills</li>
+                    <li><b>Develop project plans and timelines</b>
+                        <ul>
+                            <li>Proficiency: Competent</li>
+                            <li>Skills: Project Management Knowledge, Strategic Planning, Time Management, Communication Skills</li>
+                            <li>Suggested Improvement: Advanced Training in Strategic Planning</li>
+                        </ul>
+                    </li>
+                    <li><b>Coordinate with cross-functional teams</b>
+                        <ul>
+                            <li>Proficiency: Proficient</li>
+                            <li>Skills: Team Collaboration, Interpersonal Skills, Conflict Resolution, Communication Skills</li>
+                            <li>Suggested Improvement: Advanced Training in Conflict Resolution</li>
+                        </ul>
+                    </li>
+                    <!-- Add more valued tasks similarly -->
                 </ul>
             </div>
         </div>
@@ -246,8 +259,21 @@
             <h2>Non-Valued Tasks</h2>
             <div id="nonValuedTasks">
                 <ul>
-                    <!-- Example non-valued tasks here -->
-                    <li>Non-valued task example - Skills: Example Skills</li>
+                    <li><b>Attend excessive meetings</b>
+                        <ul>
+                            <li>Proficiency: Novice</li>
+                            <li>Skills: Time Management, Prioritization, Meeting Management Skills, Agenda Setting</li>
+                            <li>Suggested Improvement: Training in Meeting Management Skills</li>
+                        </ul>
+                    </li>
+                    <li><b>Perform manual data entry</b>
+                        <ul>
+                            <li>Proficiency: Intermediate</li>
+                            <li>Skills: Data Accuracy, Attention to Detail, Basic Computer Skills, Process Improvement (for automation)</li>
+                            <li>Suggested Improvement: Training in Process Automation Tools</li>
+                        </ul>
+                    </li>
+                    <!-- Add more non-valued tasks similarly -->
                 </ul>
             </div>
         </div>
@@ -263,7 +289,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Proficiency Levels Data -->
+                    <tr>
+                        <td>Novice</td>
+                        <td>Basic understanding and limited experience</td>
+                    </tr>
+                    <tr>
+                        <td>Intermediate</td>
+                        <td>Can perform tasks independently with moderate proficiency</td>
+                    </tr>
+                    <tr>
+                        <td>Proficient</td>
+                        <td>Good command of tasks with ability to handle more complex situations</td>
+                    </tr>
+                    <tr>
+                        <td>Advanced</td>
+                        <td>High level of expertise, can handle complex and critical tasks</td>
+                    </tr>
+                    <tr>
+                        <td>Expert</td>
+                        <td>Exceptional skills with ability to lead and mentor others</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -282,10 +327,8 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Initialize empty team array
         let team = [];
 
-        // Save team information
         function saveTeamInfo() {
             const teamName = document.getElementById('teamName').value;
             const teamSize = document.getElementById('teamSize').value;
@@ -301,7 +344,6 @@
             alert('Team information saved successfully!');
         }
 
-        // Add a new team member
         function addTeamMember() {
             const name = document.getElementById('memberName').value;
             const job = document.getElementById('memberJob').value;
@@ -318,14 +360,12 @@
             resetTeamMemberForm();
         }
 
-        // Reset the form for adding a team member
         function resetTeamMemberForm() {
             document.getElementById('memberName').value = '';
             document.getElementById('memberJob').value = '';
             document.getElementById('talentRating').value = '';
         }
 
-        // Update the table displaying team members
         function updateTeamTable() {
             const tbody = document.getElementById('teamMembersBody');
             tbody.innerHTML = '';
@@ -344,13 +384,11 @@
             });
         }
 
-        // Delete a team member from the list
         function deleteTeamMember(index) {
             team.splice(index, 1);
             updateTeamTable();
         }
 
-        // Select an employee for task analysis
         function selectEmployeeForTaskAnalysis(member) {
             document.getElementById('selectedEmployeeName').innerText = member.name;
             const taskList = document.getElementById('taskList');
@@ -362,7 +400,6 @@
             });
         }
 
-        // Add a task to a selected employee
         function addTask() {
             const selectedEmployeeName = document.getElementById('selectedEmployeeName').innerText;
             const selectedEmployee = team.find(member => member.name === selectedEmployeeName);
@@ -386,7 +423,6 @@
             console.log(`Added task for ${selectedEmployee.name}: ${taskName}, ${timeSpent}%`);
         }
 
-        // Generate a report of team performance and tasks
         function generateReport() {
             const reportContainer = document.getElementById('reportContainer');
             reportContainer.innerHTML = '';
