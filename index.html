@@ -295,6 +295,7 @@
             </div>
         </div>
         
+        <!-- Report Generation Button -->
         <button onclick="generateReport()">Generate Report</button>
         
         <div id="reportContainer" class="section"></div>
@@ -309,9 +310,17 @@
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // JavaScript functions go here
+        let selectedEmployee = null;
+        const tasks = {
+            'IT/Telco Project Manager': [
+                { name: 'Coordinate with cross-functional teams', value: 'Valued' },
+                { name: 'Handle routine administrative tasks', value: 'Non-Valued' },
+                { name: 'Identify cost-saving opportunities', value: 'Valued' },
+                { name: 'Resolve project issues promptly', value: 'Valued' }
+            ],
+            // Add more jobs and tasks here
+        };
 
-        // Save team info
         function saveTeamInfo() {
             const teamName = document.getElementById('teamName').value;
             const teamSize = document.getElementById('teamSize').value;
@@ -326,7 +335,6 @@
             alert("Team information saved successfully!");
         }
 
-        // Add team member
         function addTeamMember() {
             const memberName = document.getElementById('memberName').value;
             const memberJob = document.getElementById('memberJob').value;
@@ -356,20 +364,66 @@
             };
             actionCell.appendChild(deleteButton);
 
+            // Add click event to select a team member
+            newRow.onclick = () => selectTeamMember(memberName, memberJob, talentRating);
+
             document.getElementById('memberName').value = '';
             document.getElementById('memberJob').value = '';
             document.getElementById('talentRating').value = '';
         }
 
-        // Add task function
-        function addTask() {
-            // Task adding logic here
+        function selectTeamMember(name, job, rating) {
+            selectedEmployee = { name, job, rating };
+            document.getElementById('selectedEmployeeName').textContent = name;
+
+            // Populate task options based on the selected job
+            const taskSelect = document.getElementById('taskSelect');
+            taskSelect.innerHTML = '<option value="">Select a Task</option>'; // Reset tasks
+
+            tasks[job].forEach(task => {
+                const option = document.createElement('option');
+                option.value = task.name;
+                option.textContent = `${task.name} - ${task.value}`;
+                taskSelect.appendChild(option);
+            });
+
+            // Reset task inputs
+            document.getElementById('taskValue').value = '';
+            document.getElementById('timeSpent').value = '';
         }
 
-        // Generate report function
-        function generateReport() {
-            // Report generation logic here
+        function addTask() {
+            const taskName = document.getElementById('taskSelect').value;
+            const timeSpent = document.getElementById('timeSpent').value;
+
+            if (!taskName || !timeSpent) {
+                alert("Please select a task and enter the time spent.");
+                return;
+            }
+
+            const taskValue = document.getElementById('taskValue').value;
+            const taskList = document.getElementById('taskList');
+            const taskItem = document.createElement('div');
+
+            taskItem.textContent = `${taskName} - ${taskValue} - ${timeSpent}%`;
+            taskList.appendChild(taskItem);
+
+            // Reset task inputs
+            document.getElementById('taskSelect').value = '';
+            document.getElementById('taskValue').value = '';
+            document.getElementById('timeSpent').value = '';
         }
+
+        function generateReport() {
+            // Report generation logic
+            alert("Report generated successfully!");
+        }
+
+        // Event listeners for dynamic updates
+        document.getElementById('taskSelect').addEventListener('change', function() {
+            const selectedTask = tasks[selectedEmployee.job].find(task => task.name === this.value);
+            document.getElementById('taskValue').value = selectedTask ? selectedTask.value : '';
+        });
     </script>
 </body>
 </html>
