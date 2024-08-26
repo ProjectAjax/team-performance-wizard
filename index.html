@@ -7,23 +7,149 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     
     <style>
-        /* ... existing styles ... */
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --light-color: #ffffff;
+            --dark-color: #343a40;
+            --hover-color: #0056b3;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --neutral-color: #f0f0f0;
+            --background-color: #f8f9fa;
+            --border-radius: 8px;
+        }
 
-        /* Adjusting the logo size and position */
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--background-color);
+            color: var(--dark-color);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--light-color);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 0 15px var(--shadow-color);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
         .logo {
-            width: 150px; /* Made logo smaller for better fit */
+            width: 120px;
             height: auto;
-            display: block;
-            margin: 10px auto; /* Adjusted margins for better spacing */
+            margin-bottom: 15px;
         }
 
-        /* Ensuring charts and tables are responsive */
-        .chart-container, .table-container {
+        .header h1 {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 2.2em;
+        }
+
+        input, select, button {
             width: 100%;
-            overflow-x: auto; /* Enable horizontal scrolling on smaller screens */
+            padding: 12px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
         }
 
-        /* Other styles remain unchanged */
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            border-radius: var(--border-radius);
+        }
+
+        button:hover {
+            background-color: var(--hover-color);
+            transform: scale(1.02);
+        }
+
+        .section {
+            background-color: var(--light-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+
+        .section h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--secondary-color);
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -73,26 +199,27 @@
         <!-- Team Members Table Section -->
         <div class="section">
             <h2>Team Members</h2>
-            <div class="table-container">
-                <table id="teamMembersTable">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Job</th>
-                            <th>Talent Rating</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="teamMembersBody"></tbody>
-                </table>
-            </div>
+            <table id="teamMembersTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Job</th>
+                        <th>Talent Rating</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="teamMembersBody"></tbody>
+            </table>
         </div>
         
         <!-- Valued Tasks Section -->
         <div class="section">
             <h2>Valued Tasks</h2>
             <div id="valuedTasks">
-                <!-- List of Valued Tasks -->
+                <ul>
+                    <!-- Example tasks here -->
+                    <li>Task example - Skills: Example Skills</li>
+                </ul>
             </div>
         </div>
 
@@ -100,7 +227,10 @@
         <div class="section">
             <h2>Non-Valued Tasks</h2>
             <div id="nonValuedTasks">
-                <!-- List of Non-Valued Tasks -->
+                <ul>
+                    <!-- Example non-valued tasks here -->
+                    <li>Non-valued task example - Skills: Example Skills</li>
+                </ul>
             </div>
         </div>
         
