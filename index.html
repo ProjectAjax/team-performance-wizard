@@ -38,7 +38,7 @@
             max-width: 900px;
             width: 100%;
             background-color: var(--light-color);
-            padding: 20px;
+            padding: 30px;
             border-radius: var(--border-radius);
             box-shadow: 0 0 15px var(--shadow-color);
         }
@@ -49,15 +49,15 @@
         }
 
         .logo {
-            width: 100px;
+            width: 150px;
             height: auto;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
 
         .header h1 {
             color: var(--primary-color);
             margin: 0;
-            font-size: 2em;
+            font-size: 2.5em;
         }
 
         .section {
@@ -71,7 +71,7 @@
         .section h2 {
             color: var(--primary-color);
             margin-bottom: 15px;
-            font-size: 1.5em;
+            font-size: 1.7em;
         }
 
         input, select, button {
@@ -156,7 +156,6 @@
             opacity: 1;
         }
 
-        /* Flexbox layout improvements */
         .form-group {
             display: flex;
             gap: 10px;
@@ -390,8 +389,19 @@
         }
 
         function selectEmployeeForTaskAnalysis(member) {
-            document.getElementById('selectedEmployeeName').innerText = member.name;
+            const selectedEmployeeNameElem = document.getElementById('selectedEmployeeName');
+            if (!selectedEmployeeNameElem) {
+                alert('Please add a section for task analysis display.');
+                return;
+            }
+            selectedEmployeeNameElem.innerText = member.name;
+
             const taskList = document.getElementById('taskList');
+            if (!taskList) {
+                alert('Please add a task list section in your HTML.');
+                return;
+            }
+
             taskList.innerHTML = '';
             member.tasks.forEach((task) => {
                 const taskItem = document.createElement('div');
