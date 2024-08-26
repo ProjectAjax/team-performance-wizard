@@ -168,6 +168,26 @@
             margin-top: 20px;
             font-weight: bold;
         }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .legend-item {
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            background-color: var(--primary-color);
+            display: inline-block;
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
@@ -259,6 +279,7 @@
         <div class="chart-container">
             <h4 class="chart-header">Talent Distribution</h4>
             <canvas id="talentDistributionChart"></canvas>
+            <div class="legend" id="talentLegend"></div>
         </div>
         <div class="chart-container">
             <h4 class="chart-header">Task Distribution</h4>
@@ -503,6 +524,26 @@
                             }
                         }
                     }
+                }
+            });
+
+            // Add descriptions to the pie chart legend
+            updateLegend(talentCounts, ['#007bff', '#6c757d', '#28a745', '#dc3545', '#ffc107', '#17a2b8', '#e83e8c', '#20c997', '#fd7e14']);
+        }
+
+        function updateLegend(talentCounts, colors) {
+            const legendContainer = document.getElementById('talentLegend');
+            legendContainer.innerHTML = '';
+            talentCounts.forEach((count, index) => {
+                if (count > 0) {
+                    const legendItem = document.createElement('div');
+                    legendItem.className = 'legend-item';
+                    const colorBox = document.createElement('span');
+                    colorBox.className = 'legend-color';
+                    colorBox.style.backgroundColor = colors[index];
+                    legendItem.appendChild(colorBox);
+                    legendItem.appendChild(document.createTextNode(`Talent Rating ${index + 1}`));
+                    legendContainer.appendChild(legendItem);
                 }
             });
         }
