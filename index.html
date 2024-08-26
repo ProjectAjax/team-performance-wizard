@@ -37,9 +37,20 @@
             gap: 20px;
         }
 
-        h1, h2, h3, h4 {
-            color: var(--primary-color);
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-bottom: 20px;
+        }
+
+        .header img {
+            max-height: 50px;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            margin: 0;
         }
 
         input, select, button {
@@ -112,6 +123,18 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px var(--shadow-color);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--secondary-color);
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
         }
 
         .tooltip {
@@ -192,7 +215,11 @@
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to SkillsSync360</h1>
+        <!-- Header with Logo and Title -->
+        <div class="header">
+            <img src="Training CULTURE PNG.png" alt="Training Culture Logo"> <!-- Replace 'Training CULTURE PNG.png' with the actual path to your logo -->
+            <h1>SkillsSync360</h1>
+        </div>
         
         <div class="section">
             <h2>Team Dashboard</h2>
@@ -288,6 +315,11 @@
         <div class="chart-container">
             <h4 class="chart-header">Skill Proficiency Levels</h4>
             <canvas id="skillProficiencyChart"></canvas>
+        </div>
+
+        <!-- Footer with Copyright Information -->
+        <div class="footer">
+            &copy; 2024 Training Culture. All rights reserved.
         </div>
     </div>
 
