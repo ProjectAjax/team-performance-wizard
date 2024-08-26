@@ -5,80 +5,147 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkillsSync360</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             line-height: 1.6;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f4;
+            background-color: var(--light-color);
+            color: var(--dark-color);
         }
+
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
+
         h1, h2, h3 {
-            color: #333;
+            color: var(--primary-color);
+            margin-bottom: 20px;
         }
+
         input, select {
             width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            font-size: 16px;
         }
+
         button {
-            background-color: #007bff;
+            background-color: var(--primary-color);
             color: white;
-            padding: 10px 15px;
+            padding: 12px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
         }
+
         button:hover {
-            opacity: 0.8;
+            background-color: #0056b3;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
+
         th, td {
             border: 1px solid #ddd;
             padding: 12px;
             text-align: left;
         }
+
         th {
-            background-color: #f2f2f2;
+            background-color: var(--primary-color);
+            color: white;
         }
+
         .task-row {
             display: flex;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
+
         .task-row select, .task-row input {
             flex: 1;
-            margin-right: 10px;
+            margin-right: 15px;
         }
+
         #reportContainer {
-            margin-top: 20px;
+            margin-top: 30px;
         }
+
         .chart-container {
             width: 100%;
             max-width: 600px;
-            margin: 20px auto;
+            margin: 30px auto;
         }
+
         .employee-row {
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
+
         .employee-row:hover {
-            background-color: #f5f5f5;
+            background-color: #f0f0f0;
         }
+
         .selected-employee {
             background-color: #e6f7ff;
+        }
+
+        .section {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
         }
     </style>
 </head>
@@ -86,63 +153,74 @@
     <div class="container">
         <h1>Welcome to SkillsSync360</h1>
         
-        <h2>Team Dashboard</h2>
-        <input type="text" id="teamName" placeholder="Team Name">
-        <input type="number" id="teamSize" placeholder="Team Size">
-        <input type="text" id="teamLead" placeholder="Team Lead">
-        <button onclick="saveTeamInfo()">Save Team Info</button>
+        <div class="section">
+            <h2>Team Dashboard</h2>
+            <input type="text" id="teamName" placeholder="Team Name">
+            <input type="number" id="teamSize" placeholder="Team Size">
+            <input type="text" id="teamLead" placeholder="Team Lead">
+            <button onclick="saveTeamInfo()">Save Team Info</button>
+        </div>
         
-        <h2>Add Team Member</h2>
-        <input type="text" id="memberName" placeholder="Name">
-        <select id="memberJob">
-            <option value="">Select Job</option>
-            <option value="IT/Telco Project Manager">IT/Telco Project Manager</option>
-            <!-- Add more job options as needed -->
-        </select>
-        <select id="talentRating" title="Hover for descriptions">
-            <option value="1">1 - Underperformer</option>
-            <option value="2">2 - Inconsistent Performer</option>
-            <option value="3">3 - Emerging Talent</option>
-            <option value="4">4 - Steady Contributor</option>
-            <option value="5">5 - Key Contributor</option>
-            <option value="6">6 - Future Star</option>
-            <option value="7">7 - Solid Performer</option>
-            <option value="8">8 - High Performer</option>
-            <option value="9">9 - Top Talent/Star</option>
-        </select>
-        <button onclick="addTeamMember()">Add Team Member</button>
-        
-        <h2>Team Members</h2>
-        <table id="teamMembersTable">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Job</th>
-                    <th>Talent Rating</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="teamMembersBody"></tbody>
-        </table>
-        
-        <h2>Task Analysis</h2>
-        <div id="taskAnalysis">
-            <h3>Task Analysis for <span id="selectedEmployeeName"></span></h3>
-            <div class="task-row">
-                <select id="taskSelect">
-                    <option value="">Select a Task</option>
-                    <!-- Task options will be populated dynamically -->
+        <div class="section">
+            <h2>Add Team Member</h2>
+            <input type="text" id="memberName" placeholder="Name">
+            <select id="memberJob">
+                <option value="">Select Job</option>
+                <option value="IT/Telco Project Manager">IT/Telco Project Manager</option>
+                <!-- Add more job options as needed -->
+            </select>
+            <div class="tooltip">
+                <select id="talentRating">
+                    <option value="1">1 - Underperformer</option>
+                    <option value="2">2 - Inconsistent Performer</option>
+                    <option value="3">3 - Emerging Talent</option>
+                    <option value="4">4 - Steady Contributor</option>
+                    <option value="5">5 - Key Contributor</option>
+                    <option value="6">6 - Future Star</option>
+                    <option value="7">7 - Solid Performer</option>
+                    <option value="8">8 - High Performer</option>
+                    <option value="9">9 - Top Talent/Star</option>
                 </select>
-                <input type="text" id="taskValue" readonly>
-                <input type="number" id="timeSpent" placeholder="% Time Spent">
+                <span class="tooltiptext">Hover for talent rating descriptions</span>
             </div>
-            <button onclick="addTask()">Add Task</button>
-            <div id="taskList"></div>
+            <button onclick="addTeamMember()">Add Team Member</button>
+        </div>
+        
+        <div class="section">
+            <h2>Team Members</h2>
+            <table id="teamMembersTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Job</th>
+                        <th>Talent Rating</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="teamMembersBody"></tbody>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>Task Analysis</h2>
+            <div id="taskAnalysis">
+                <h3>Task Analysis for <span id="selectedEmployeeName"></span></h3>
+                <div class="task-row">
+                    <select id="taskSelect">
+                        <option value="">Select a Task</option>
+                        <!-- Task options will be populated dynamically -->
+                    </select>
+                    <input type="text" id="taskValue" readonly>
+                    <input type="number" id="timeSpent" placeholder="% Time Spent">
+                </div>
+                <button onclick="addTask()">Add Task</button>
+                <div id="taskList"></div>
+            </div>
         </div>
         
         <button onclick="generateReport()">Generate Report</button>
         
-        <div id="reportContainer"></div>
+        <div id="reportContainer" class="section"></div>
     </div>
 
     <script>
@@ -178,7 +256,35 @@
             teamInfo.name = document.getElementById('teamName').value;
             teamInfo.size = document.getElementById('teamSize').value;
             teamInfo.lead = document.getElementById('teamLead').value;
-            alert('Team information saved!');
+            showNotification('Team information saved successfully!', 'success');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '10px 20px';
+            notification.style.borderRadius = '4px';
+            notification.style.color = 'white';
+            notification.style.zIndex = '1000';
+
+            switch(type) {
+                case 'success':
+                    notification.style.backgroundColor = 'var(--success-color)';
+                    break;
+                case 'error':
+                    notification.style.backgroundColor = 'var(--danger-color)';
+                    break;
+                default:
+                    notification.style.backgroundColor = 'var(--primary-color)';
+            }
+
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
         }
 
         function populateTaskSelect() {
@@ -198,8 +304,9 @@
                 teamMembers.push({ name, job, talentRating, tasks: [] });
                 updateTeamMembersTable();
                 clearTeamMemberInputs();
+                showNotification('Team member added successfully!', 'success');
             } else {
-                alert('Please fill in all fields');
+                showNotification('Please fill in all fields', 'error');
             }
         }
 
@@ -242,6 +349,7 @@
                 document.getElementById('selectedEmployeeName').textContent = '';
                 document.getElementById('taskList').innerHTML = '';
             }
+            showNotification('Team member deleted successfully!', 'success');
         }
 
         function clearTeamMemberInputs() {
@@ -252,7 +360,7 @@
 
         function addTask() {
             if (!selectedEmployee) {
-                alert('Please select an employee first');
+                showNotification('Please select an employee first', 'error');
                 return;
             }
             const taskName = document.getElementById('taskSelect').value;
@@ -269,8 +377,9 @@
                 document.getElementById('taskValue').value = '';
                 document.getElementById('timeSpent').value = '';
                 updateTaskList();
+                showNotification('Task added successfully!', 'success');
             } else {
-                alert('Please select a task and enter time spent');
+                showNotification('Please select a task and enter time spent', 'error');
             }
         }
 
@@ -302,68 +411,4 @@
                 <h3>Team Information</h3>
                 <p>Team Name: ${teamInfo.name || 'Not set'}</p>
                 <p>Team Size: ${teamInfo.size || 'Not set'}</p>
-                <p>Team Lead: ${teamInfo.lead || 'Not set'}</p>
-            `;
-
-            // Talent Distribution
-            const talentDistribution = teamMembers.reduce((acc, member) => {
-                acc[member.talentRating] = (acc[member.talentRating] || 0) + 1;
-                return acc;
-            }, {});
-
-            reportContainer.innerHTML += '<h3>Talent Distribution</h3>';
-            reportContainer.innerHTML += '<canvas id="talentChart"></canvas>';
-            new Chart(document.getElementById('talentChart').getContext('2d'), {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(talentDistribution),
-                    datasets: [{
-                        data: Object.values(talentDistribution),
-                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#36A2EB', '#FFCE56']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    title: { display: true, text: 'Talent Distribution' }
-                }
-            });
-
-            // Task Value Distribution
-            const taskValueDistribution = { Valued: 0, 'Non-Valued': 0 };
-            teamMembers.forEach(member => {
-                member.tasks.forEach(task => {
-                    taskValueDistribution[task.valued ? 'Valued' : 'Non-Valued'] += task.timeSpent;
-                });
-            });
-
-            reportContainer.innerHTML += '<h3>Task Value Distribution</h3>';
-            reportContainer.innerHTML += '<canvas id="taskValueChart"></canvas>';
-            new Chart(document.getElementById('taskValueChart').getContext('2d'), {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(taskValueDistribution),
-                    datasets: [{
-                        data: Object.values(taskValueDistribution),
-                        backgroundColor: ['#36A2EB', '#FF6384']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    title: { display: true, text: 'Task Value Distribution (% Time Spent)' }
-                }
-            });
-        }
-
-        // Initialize
-        populateTaskSelect();
-        document.getElementById('taskSelect').addEventListener('change', updateTaskValue);
-
-        // Initialize with some sample data
-        teamMembers.push(
-            { name: "Mike", job: "IT/Telco Project Manager", talentRating: "4", tasks: [] },
-            { name: "Bec", job: "IT/Telco Project Manager", talentRating: "5", tasks: [] }
-        );
-        updateTeamMembersTable();
-    </script>
-</body>
-</html>
+                <p>Team Lea
