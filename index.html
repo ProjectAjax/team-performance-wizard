@@ -83,6 +83,7 @@
 
         .task-row {
             display: flex;
+            flex-direction: column;
             margin-bottom: 15px;
             gap: 10px;
         }
@@ -214,7 +215,7 @@
             <div id="taskAnalysis">
                 <h3>Task Analysis for <span id="selectedEmployeeName"></span></h3>
                 <div class="header-row">Task</div>
-                <select id="taskSelect">
+                <select id="taskSelect" onchange="updateTaskValue()">
                     <option value="">Select a Task</option>
                     <!-- Task options will be populated dynamically -->
                 </select>
@@ -261,27 +262,27 @@
         let teamInfo = {};
 
         const tasks = [
-            { name: "Develop project plans and timelines", valued: true },
-            { name: "Coordinate with cross-functional teams", valued: true },
-            { name: "Monitor project budgets", valued: true },
-            { name: "Identify cost-saving opportunities", valued: true },
-            { name: "Identify and mitigate project risks", valued: true },
-            { name: "Provide regular stakeholder updates", valued: true },
-            { name: "Manage stakeholder expectations", valued: true },
-            { name: "Allocate resources effectively", valued: true },
-            { name: "Conduct quality assurance checks", valued: true },
-            { name: "Coordinate with vendors and suppliers", valued: true },
-            { name: "Negotiate contracts with vendors", valued: true },
-            { name: "Resolve project issues promptly", valued: true },
-            { name: "Analyze project performance for improvements", valued: true },
-            { name: "Attend excessive meetings", valued: false },
-            { name: "Perform manual data entry", valued: false },
-            { name: "Micromanage team members", valued: false },
-            { name: "Handle routine administrative tasks", valued: false },
-            { name: "Wait for unnecessary approvals", valued: false },
-            { name: "Provide excessive status updates", valued: false },
-            { name: "Create redundant documentation", valued: false },
-            { name: "Manage non-critical emails", valued: false }
+            { name: "Develop project plans and timelines", valued: true, skill: "Planning" },
+            { name: "Coordinate with cross-functional teams", valued: true, skill: "Coordination" },
+            { name: "Monitor project budgets", valued: true, skill: "Budgeting" },
+            { name: "Identify cost-saving opportunities", valued: true, skill: "Cost Management" },
+            { name: "Identify and mitigate project risks", valued: true, skill: "Risk Management" },
+            { name: "Provide regular stakeholder updates", valued: true, skill: "Communication" },
+            { name: "Manage stakeholder expectations", valued: true, skill: "Expectation Management" },
+            { name: "Allocate resources effectively", valued: true, skill: "Resource Allocation" },
+            { name: "Conduct quality assurance checks", valued: true, skill: "Quality Assurance" },
+            { name: "Coordinate with vendors and suppliers", valued: true, skill: "Vendor Management" },
+            { name: "Negotiate contracts with vendors", valued: true, skill: "Negotiation" },
+            { name: "Resolve project issues promptly", valued: true, skill: "Problem Solving" },
+            { name: "Analyze project performance for improvements", valued: true, skill: "Performance Analysis" },
+            { name: "Attend excessive meetings", valued: false, skill: "Meeting Management" },
+            { name: "Perform manual data entry", valued: false, skill: "Data Entry" },
+            { name: "Micromanage team members", valued: false, skill: "Micromanagement" },
+            { name: "Handle routine administrative tasks", valued: false, skill: "Administrative" },
+            { name: "Wait for unnecessary approvals", valued: false, skill: "Approval Management" },
+            { name: "Provide excessive status updates", valued: false, skill: "Reporting" },
+            { name: "Create redundant documentation", valued: false, skill: "Documentation" },
+            { name: "Manage non-critical emails", valued: false, skill: "Email Management" }
         ];
 
         function saveTeamInfo() {
@@ -388,7 +389,8 @@
                     name: taskName,
                     valued: taskObj.valued,
                     timeSpent: parseFloat(timeSpent),
-                    proficiency: proficiencyLevel
+                    proficiency: proficiencyLevel,
+                    skill: taskObj.skill
                 });
                 document.getElementById('taskSelect').value = '';
                 document.getElementById('taskValue').value = '';
@@ -414,7 +416,7 @@
             if (selectedEmployee) {
                 selectedEmployee.tasks.forEach((task, index) => {
                     const taskDiv = document.createElement('div');
-                    taskDiv.textContent = `${task.name} - ${task.valued ? 'Valued' : 'Non-Valued'} - ${task.timeSpent}% - Proficiency: ${task.proficiency}`;
+                    taskDiv.textContent = `${task.name} - ${task.valued ? 'Valued' : 'Non-Valued'} - ${task.timeSpent}% - Proficiency: ${task.proficiency} - Skill: ${task.skill}`;
                     taskList.appendChild(taskDiv);
                 });
             }
