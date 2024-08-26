@@ -215,6 +215,13 @@
                     </select>
                     <input type="text" id="taskValue" readonly>
                     <input type="number" id="timeSpent" placeholder="% Time Spent">
+                    <select id="skillProficiency">
+                        <option value="1">1 - Beginner</option>
+                        <option value="2">2 - Novice</option>
+                        <option value="3">3 - Competent</option>
+                        <option value="4">4 - Proficient</option>
+                        <option value="5">5 - Expert</option>
+                    </select>
                 </div>
                 <button onclick="addTask()">Add Task</button>
                 <div id="taskList"></div>
@@ -224,6 +231,17 @@
         <button onclick="generateReport()">Generate Report</button>
         
         <div id="reportContainer" class="section"></div>
+        
+        <!-- Chart containers for reports -->
+        <div class="chart-container">
+            <canvas id="talentDistributionChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="taskDistributionChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="skillProficiencyChart"></canvas>
+        </div>
     </div>
 
     <!-- Place script at the end of the body -->
@@ -354,21 +372,24 @@
             }
             const taskName = document.getElementById('taskSelect').value;
             const timeSpent = document.getElementById('timeSpent').value;
-            
-            if (taskName && timeSpent) {
+            const proficiencyLevel = document.getElementById('skillProficiency').value;
+
+            if (taskName && timeSpent && proficiencyLevel) {
                 const taskObj = tasks.find(t => t.name === taskName);
                 selectedEmployee.tasks.push({
                     name: taskName,
                     valued: taskObj.valued,
-                    timeSpent: parseFloat(timeSpent)
+                    timeSpent: parseFloat(timeSpent),
+                    proficiency: proficiencyLevel
                 });
                 document.getElementById('taskSelect').value = '';
                 document.getElementById('taskValue').value = '';
                 document.getElementById('timeSpent').value = '';
+                document.getElementById('skillProficiency').value = '1';
                 updateTaskList();
                 showNotification('Task added successfully!', 'success');
             } else {
-                showNotification('Please select a task and enter time spent', 'error');
+                showNotification('Please select a task, enter time spent, and proficiency level', 'error');
             }
         }
 
@@ -385,7 +406,7 @@
             if (selectedEmployee) {
                 selectedEmployee.tasks.forEach((task, index) => {
                     const taskDiv = document.createElement('div');
-                    taskDiv.textContent = `${task.name} - ${task.valued ? 'Valued' : 'Non-Valued'} - ${task.timeSpent}%`;
+                    taskDiv.textContent = `${task.name} - ${task.valued ? 'Valued' : 'Non-Valued'} - ${task.timeSpent}% - Proficiency: ${task.proficiency}`;
                     taskList.appendChild(taskDiv);
                 });
             }
@@ -403,7 +424,104 @@
                 <p>Team Lead: ${teamInfo.lead || 'Not set'}</p>
             `;
 
-            // Additional report generation code to be added for charts and data analysis
+            // Generate charts
+            generateTalentDistributionChart();
+            generateTaskDistributionChart();
+            generateSkillProficiencyChart();
+        }
+
+        function generateTalentDistributionChart() {
+            const ctx = document.getElementById('talentDistributionChart').getContext('2d');
+            const talentCounts = Array(9).fill(0); // Array for talent ratings from 1 to 9
+            teamMembers.forEach(member => {
+                talentCounts[member.talentRating - 1]++;
+            });
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
+                    datasets: [{
+                        data: talentCounts,
+                        backgroundColor: ['#007bff', '#6c757d', '#28a745', '#dc3545', '#ffc107', '#17a2b8', '#e83e8c', '#20c997', '#fd7e14']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return `Talent Rating ${tooltipItem.label}: ${tooltipItem.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateTaskDistributionChart() {
+            const ctx = document.getElementById('taskDistributionChart').getContext('2d');
+            const valuedTasks = selectedEmployee.tasks.filter(task => task.valued).length;
+            const nonValuedTasks = selectedEmployee.tasks.length - valuedTasks;
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Valued Tasks', 'Non-Valued Tasks'],
+                    datasets: [{
+                        label: 'Task Distribution',
+                        data: [valuedTasks, nonValuedTasks],
+                        backgroundColor: ['#28a745', '#dc3545']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateSkillProficiencyChart() {
+            const ctx = document.getElementById('skillProficiencyChart').getContext('2d');
+            const proficiencyLevels = [0, 0, 0, 0, 0]; // Proficiency levels from 1 to 5
+            selectedEmployee.tasks.forEach(task => {
+                proficiencyLevels[task.proficiency - 1]++;
+            });
+
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Beginner', 'Novice', 'Competent', 'Proficient', 'Expert'],
+                    datasets: [{
+                        label: 'Skill Proficiency Levels',
+                        data: proficiencyLevels,
+                        backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                        borderColor: '#007bff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: false
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 5
+                        }
+                    }
+                }
+            });
         }
 
         // Attach functions to window object to make them accessible globally
